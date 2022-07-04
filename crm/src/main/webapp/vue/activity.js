@@ -189,6 +189,23 @@
                     console.log(reason);
                 })
 
+            },
+            //批量导出按钮
+            allActivityDown:function (){
+                window.location.href="workbench/activity/exportAllActivity.do";
+            },
+            //选择导出按钮
+            selectedActivityDown:function () {
+                if (vue2.ids.length===0){
+                    alert("请至少选中一个活动!");
+                    return;
+                }
+                var idStr="";
+                for(var i=0;i<vue2.ids.length;i++){
+                    idStr+="id="+vue2.ids[i]+"&";
+                }
+                idStr = idStr.substr(0,idStr.length-1);
+                window.location.href="workbench/activity/exportSelectedActivity.do?"+idStr;
             }
         },
 

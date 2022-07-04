@@ -18,4 +18,8 @@ public interface ActivityMapper {
     int changeActivity(Activity activity);
 
     Activity selectActivityById(String id);
+
+    List<Activity> selectAllActivity();
+
+    List<Activity> selectActivityByIds(@Param("ids") String[] ids);
 }

@@ -251,10 +251,10 @@
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal">
                     <span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）
                 </button>
-                <button id="exportActivityAllBtn" type="button" class="btn btn-default"><span
+                <button id="exportActivityAllBtn" type="button" class="btn btn-default" @click="allActivityDown"><span
                         class="glyphicon glyphicon-export"></span> 下载列表数据（批量导出）
                 </button>
-                <button id="exportActivityXzBtn" type="button" class="btn btn-default"><span
+                <button id="exportActivityXzBtn" type="button" class="btn btn-default" @click="selectedActivityDown"><span
                         class="glyphicon glyphicon-export"></span> 下载列表数据（选择导出）
                 </button>
             </div>

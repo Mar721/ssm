@@ -17,4 +17,8 @@ public interface ActivityService {
     int changeActivity(Activity activity);
 
     Activity queryActivityById(String id);
+
+    List<Activity> getAllActivity();
+
+    List<Activity> getActivityByIds(String[] ids);
 }

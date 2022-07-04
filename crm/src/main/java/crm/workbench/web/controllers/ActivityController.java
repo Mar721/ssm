@@ -3,18 +3,27 @@ package crm.workbench.web.controllers;
 import crm.commons.contants.Contants;
 import crm.commons.pojo.ReturnObject;
 import crm.commons.utils.DateUtil;
+import crm.commons.utils.ExportUtil;
 import crm.commons.utils.UUIDUtil;
 import crm.settings.pojo.User;
 import crm.settings.service.UserService;
 import crm.workbench.pojo.Activity;
 import crm.workbench.service.ActivityService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -124,5 +133,69 @@ public class ActivityController {
             return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
                     "系统忙，请稍后重试...");
         }
+    }
+
+    @RequestMapping("/workbench/activity/exportAllActivity.do")
+    public void exportAllActivity(HttpServletResponse response) throws IOException {
+        List<Activity> activityList = activityService.getAllActivity();
+        /*
+          使用apache-poi插件生成excel文件
+         */
+        HSSFWorkbook wb = ExportUtil.getExportFile(activityList);
+
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
+        OutputStream outputStream = response.getOutputStream();
+        wb.write(outputStream);
+        //流谁创建谁close
+        wb.close();
+        outputStream.flush();
+
+
+
+//        OutputStream fileOutputStream = new
+//                FileOutputStream("E:\\idea-workspace\\ssm\\crm\\src\\" +
+//                "main\\resources\\activityList.xls");
+//        wb.write(fileOutputStream);
+//        fileOutputStream.close();
+//        wb.close();
+//
+//        /*
+//        这里wb要先把文件写入磁盘，然后系统又要从磁盘中读取数据，效率太低
+//        wb.write可以直接写到输出流，但使用了responseEntity的作为返回值无法实现，需要改为用response响应文件
+//        public ResponseEntity<byte[]> fileDownload()
+//        改为 public void fileDownload(response)
+//         */
+//        InputStream is = new FileInputStream("E:\\idea-workspace\\ssm\\crm\\src\\" +
+//                "main\\resources\\activityList.xls");
+//        //创建字节数组
+//        byte[] bytes = new byte[is.available()];
+//        //将流读到字节数组中
+//        is.read(bytes);
+//        //创建HttpHeaders对象设置响应头信息
+//        MultiValueMap<String, String> headers = new HttpHeaders();
+//        //设置要下载方式以及下载文件的名字
+//        headers.add("Content-Disposition", "attachment;filename=activityList.xls");
+//        //设置响应状态码
+//        HttpStatus statusCode = HttpStatus.OK;
+//        //创建ResponseEntity对象
+//        ResponseEntity<byte[]> responseEntity = new ResponseEntity<>(bytes, headers, statusCode);
+//        //关闭输入流
+//        is.close();
+//        return responseEntity;
+    }
+
+    @RequestMapping("/workbench/activity/exportSelectedActivity.do")
+    public void exportSelectedActivity(HttpServletResponse response,String[] id) throws IOException {
+        List<Activity> activityList = activityService.getActivityByIds(id);
+        HSSFWorkbook wb = ExportUtil.getExportFile(activityList);
+
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
+        OutputStream outputStream = response.getOutputStream();
+        wb.write(outputStream);
+        //流谁创建谁close
+        wb.close();
+        outputStream.flush();
     }
 }

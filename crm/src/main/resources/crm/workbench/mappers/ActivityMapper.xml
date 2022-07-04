@@ -272,6 +272,7 @@
     </select>
 
 
+
     <delete id="deleteActivityIds" parameterType="String">
         delete from tbl_activity where id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -292,4 +293,28 @@
             edit_by=#{editBy}
         where id = #{id}
     </update>
+
+
+    <select id="selectAllActivity" resultMap="BaseResultMap">
+        select a.id,u1.name as owner,a.name,a.start_date,a.end_date,a.cost,a.description,
+               a.create_time,u2.name as create_by,a.edit_time,u3.name as edit_by
+        from tbl_activity a
+        join tbl_user u1 on u1.id=a.owner
+        join tbl_user u2 on u2.id=a.create_by
+        left join tbl_user u3 on u3.id=a.edit_by
+        order by a.create_time desc
+    </select>
+    <select id="selectActivityByIds" resultMap="BaseResultMap">
+        select a.id,u1.name as owner,a.name,a.start_date,a.end_date,a.cost,a.description,
+               a.create_time,u2.name as create_by,a.edit_time,u3.name as edit_by
+        from tbl_activity a
+                 join tbl_user u1 on u1.id=a.owner
+                 join tbl_user u2 on u2.id=a.create_by
+                 left join tbl_user u3 on u3.id=a.edit_by
+        where a.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        order by a.create_time desc
+    </select>
 </mapper>
