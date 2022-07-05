@@ -22,4 +22,6 @@ public interface ActivityMapper {
     List<Activity> selectAllActivity();
 
     List<Activity> selectActivityByIds(@Param("ids") String[] ids);
+
+    int insertActivityList(@Param("activityList") List<Activity> activityList);
 }

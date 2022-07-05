@@ -8,7 +8,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.List;
 
-public class ExportUtil {
+/**
+ * 关于excel文件操作的工具类
+ */
+public class HSSFUtil {
+    //将市场活动列表转成HSSFWorkbook对象
     public static HSSFWorkbook getExportFile(List<Activity> activityList){
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet("市场活动列表");
@@ -64,5 +68,21 @@ public class ExportUtil {
         }
 
         return wb;
+    }
+    //从指定的HSSFCell对象中获取列的值
+    public static String getCellValueFormStr(HSSFCell cell){
+        String res="";
+        if (cell.getCellType()==HSSFCell.CELL_TYPE_STRING){
+            res=cell.getStringCellValue();
+        }else if (cell.getCellType()==HSSFCell.CELL_TYPE_NUMERIC){
+            res = cell.getNumericCellValue()+"";
+        }else if (cell.getCellType()==HSSFCell.CELL_TYPE_BOOLEAN){
+            res = cell.getBooleanCellValue()+"";
+        }else if (cell.getCellType()==HSSFCell.CELL_TYPE_FORMULA){
+            res = cell.getCellFormula();
+        }else {
+            res="";
+        }
+        return res;
     }
 }

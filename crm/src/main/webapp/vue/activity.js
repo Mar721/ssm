@@ -397,4 +397,71 @@
         }
     });
 
+    var vue4=new Vue({
+        "el":"#importActivityModal",
+        data:{},
+        methods:{
+            importActivity:function () {
+
+                var activityFileName = $("#activityFile").val(); //只能获取文件名
+                //后缀
+                var suffix = activityFileName.substr(activityFileName.lastIndexOf(".")+1).toLocaleLowerCase();
+                if (suffix!=="xls"){
+                    alert("只支持xls文件");
+                    return;
+                }
+                //文件本身
+                var activityFile = $("#activityFile")[0].files[0];//获取DOM对象
+                if(activityFile.size > 5*1024*1024 ){
+                    alert("文件大小不能超过5M");
+                    return;
+                }
+                var formData = new FormData();
+                formData.append("multipartFile",activityFile);
+                // $.ajax({
+                //     url:'/workbench/activity/fileUpLoad.do',
+                //     data:formData,
+                //     //文件上传只能使用post
+                //     type:'post',
+                //     //设置ajax向后台提交参数之前，是否把参数统一转换成字符串，默认true
+                //     processData:false,
+                //     //设置ajax向后台提交参数之前，是否使用urlencode编码，默认是true
+                //     contentType:false,
+                //     dataType:'json',
+                //     success:function (data) {
+                //         if (data.code === "1"){
+                //             //保存成功，
+                //             $("#importActivityModal").modal("hide");
+                //             alert(data.message);
+                //             vue2.queryActivityByConditionForPage(1,$("#page").bs_pagination('getOption','rowsPerPage'));
+                //         }else {
+                //             alert(data.message);
+                //             //失败回显信息，模态窗口不关闭,下面的代码可以不写
+                //             $("#importActivityModal").modal("show");
+                //         }
+                //     }
+                // });
+                axios({
+                    method:"POST",
+                    url:"workbench/activity/fileUpLoad.do",
+                    processData:false,//是否把参数统一转成字符串
+                    contentType:false,//是否把所有的参数按urlencoded编码，文件上传
+                    data:formData,
+                })
+                    .then(function (value) {
+                        if (value.data.code==="1"){
+                            $("#importActivityModal").modal("hide");
+                            alert(value.data.message);
+
+                        }else {
+                            alert(value.data.message);
+                            $("#importActivityModal").modal("show");
+                        }
+                    })
+                    .catch(function (reason) {
+                        console.log(reason);
+                    });
+            }
+        }
+    });
 });

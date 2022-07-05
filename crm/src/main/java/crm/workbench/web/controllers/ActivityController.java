@@ -3,7 +3,7 @@ package crm.workbench.web.controllers;
 import crm.commons.contants.Contants;
 import crm.commons.pojo.ReturnObject;
 import crm.commons.utils.DateUtil;
-import crm.commons.utils.ExportUtil;
+import crm.commons.utils.HSSFUtil;
 import crm.commons.utils.UUIDUtil;
 import crm.settings.pojo.User;
 import crm.settings.service.UserService;
@@ -17,17 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 @Controller
 public class ActivityController {
@@ -81,15 +77,15 @@ public class ActivityController {
 
         List<Activity> activityList = activityService.queryActivityByConditionForPage(map);
         int activityCount = activityService.queryCountActivityCondition(map);
-        Map<String,Object> returnMap=new HashMap<>();
-        returnMap.put("activityList",activityList);
-        returnMap.put("activityCount",activityCount);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("activityList", activityList);
+        returnMap.put("activityCount", activityCount);
         return returnMap;
     }
 
     @RequestMapping("/workbench/activity/deleteActivity.do")
     @ResponseBody
-    public Object deleteActivity(String[] ids){
+    public Object deleteActivity(String[] ids) {
         try {
             int i = activityService.deleteActivityIds(ids);
             if (i > 0) {
@@ -98,7 +94,7 @@ public class ActivityController {
                 return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
                         "系统忙，请稍后重试...");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
                     "系统忙，请稍后重试...");
@@ -107,16 +103,14 @@ public class ActivityController {
 
     @RequestMapping("/workbench/activity/queryActivityById.do")
     @ResponseBody
-    public Object queryActivityById(String id){
-        Activity activity = activityService.queryActivityById(id);
-        return activity;
+    public Object queryActivityById(String id) {
+        return activityService.queryActivityById(id);
     }
-
 
 
     @RequestMapping("/workbench/activity/changeActivity.do")
     @ResponseBody
-    public Object changeActivity(Activity activity,HttpSession session){
+    public Object changeActivity(Activity activity, HttpSession session) {
         User user = (User) session.getAttribute(Contants.SESSION_USER);
         activity.setEditBy(user.getId());
         activity.setEditTime(DateUtil.formatDateTime(new Date()));
@@ -141,7 +135,7 @@ public class ActivityController {
         /*
           使用apache-poi插件生成excel文件
          */
-        HSSFWorkbook wb = ExportUtil.getExportFile(activityList);
+        HSSFWorkbook wb = HSSFUtil.getExportFile(activityList);
 
         response.setContentType("application/octet-stream;charset=UTF-8");
         response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
@@ -150,7 +144,6 @@ public class ActivityController {
         //流谁创建谁close
         wb.close();
         outputStream.flush();
-
 
 
 //        OutputStream fileOutputStream = new
@@ -186,9 +179,9 @@ public class ActivityController {
     }
 
     @RequestMapping("/workbench/activity/exportSelectedActivity.do")
-    public void exportSelectedActivity(HttpServletResponse response,String[] id) throws IOException {
+    public void exportSelectedActivity(HttpServletResponse response, String[] id) throws IOException {
         List<Activity> activityList = activityService.getActivityByIds(id);
-        HSSFWorkbook wb = ExportUtil.getExportFile(activityList);
+        HSSFWorkbook wb = HSSFUtil.getExportFile(activityList);
 
         response.setContentType("application/octet-stream;charset=UTF-8");
         response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
@@ -197,5 +190,52 @@ public class ActivityController {
         //流谁创建谁close
         wb.close();
         outputStream.flush();
+    }
+
+
+    @RequestMapping("/workbench/activity/fileUpLoad.do")
+    @ResponseBody
+    public Object fileUpLoad(MultipartFile multipartFile,HttpSession session) {
+        User user = (User) session.getAttribute(Contants.SESSION_USER);
+        try {
+//            String originalFilename = multipartFile.getOriginalFilename();
+//            File file = new File("E:\\idea-workspace\\ssm\\crm\\src\\main\\resources", Objects.requireNonNull(originalFilename));
+//            multipartFile.transferTo(file);
+//            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStream inputStream = multipartFile.getInputStream();
+            HSSFWorkbook wb = new HSSFWorkbook(inputStream);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            HSSFRow row = null;
+            HSSFCell cell = null;
+            Activity activity = null;
+            List<Activity> activityList = new ArrayList<>();
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                row = sheet.getRow(i);
+                activity = new Activity();
+                activity.setId(UUIDUtil.getUUID());
+                activity.setOwner(user.getId());
+                activity.setCreateTime(DateUtil.formatDateTime(new Date()));
+                activity.setCreateBy(user.getId());
+                for (int j = 0; j < row.getLastCellNum(); j++) {
+                    cell = row.getCell(j);
+                    String cellValueFormStr = HSSFUtil.getCellValueFormStr(cell);
+                    switch (j){
+                        case 0:activity.setName(cellValueFormStr);break;
+                        case 1:activity.setStartDate(cellValueFormStr);break;
+                        case 2:activity.setEndDate(cellValueFormStr);break;
+                        case 3:activity.setCost(cellValueFormStr);break;
+                        case 4:activity.setDescription(cellValueFormStr);break;
+                    }
+                }
+                activityList.add(activity);
+            }
+            int res = activityService.saveCreateActivityByList(activityList);
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,"成功添加"+res+"条数据");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,"系统忙，请稍后重试...");
+        }
+
+
     }
 }
