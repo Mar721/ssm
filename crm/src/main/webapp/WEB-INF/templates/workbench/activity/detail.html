@@ -9,13 +9,65 @@
     <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="vue/axios.min.js"></script>
     <script type="text/javascript" src="vue/vue.js"></script>
-    <script type="text/javascript" src="vue/detail.js"></script>
     <script type="text/javascript">
 
         //默认情况下取消和保存按钮是隐藏的
         var cancelAndSaveBtnDefault = true;
 
         $(function () {
+            var vue = new Vue({
+                "el":"#remarkDivList",
+                data:{
+                    noteContent:""
+                },
+                methods:{
+                    addRemark:function () {
+                        var id = '[[${activity.id}]]';
+                        axios({
+                            method:"POST",
+                            url:"workbench/activity/addRemark.do",
+                            params:{
+                                noteContent:vue.noteContent,
+                                activityId:id,
+                            }
+                        })
+                            .then(function (value) {
+                                if (value.data.code === "1"){
+                                    //清空输入备注框
+                                    var htmlStr="";
+                                    htmlStr+="<div class=\"remarkDiv\" id=\"div_"+value.data.retData.id+"\" style=\"height: 60px;\">";
+                                    htmlStr+="	<img th:title=\"${session.sessionUser.name}\" src=\"image/user-thumbnail.png\"";
+                                    htmlStr+="		 style=\"width: 30px; height:30px;\">";
+                                    htmlStr+="		<div style=\"position: relative; top: -40px; left: 40px;\">";
+                                    htmlStr+="			<h5>"+vue.noteContent+"</h5>";
+                                    htmlStr+="			<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font>";
+                                    htmlStr+="			<b>[[${activity.name}]]</b> <small style=\"color: gray;\"> "+value.data.retData.createTime;
+                                    htmlStr+="			由[[${session.user.name}]]创建</small>";
+                                    htmlStr+="			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+                                    htmlStr+="				<a class=\"myHref\" name=\"editA\" remarkId=\""+value.data.retData.id+"\" href=\"javascript:void(0);\"><span";
+                                    htmlStr+="						class=\"glyphicon glyphicon-edit\"";
+                                    htmlStr+="						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+                                    htmlStr+="				&nbsp;&nbsp;&nbsp;&nbsp;";
+                                    htmlStr+="				<a class=\"myHref\" name=\"deleteA\" remarkId=\""+value.data.retData.id+"\" href=\"javascript:void(0);\"><span";
+                                    htmlStr+="						class=\"glyphicon glyphicon-remove\"";
+                                    htmlStr+="						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+                                    htmlStr+="			</div>";
+                                    htmlStr+="		</div>";
+                                    htmlStr+="</div>";
+                                    $(".page-header").after(htmlStr);
+                                    vue.noteContent="";
+                                }else {
+                                    alert(value.data.message);
+                                }
+                            })
+                            .catch(function (reason) {
+                                console.log(reason)
+                            });
+                    }
+                }
+            });
+
+
             $("#remark").focus(function () {
                 if (cancelAndSaveBtnDefault) {
                     //设置remarkDiv的高度为130px
@@ -34,28 +86,35 @@
                 cancelAndSaveBtnDefault = true;
             });
 
-            $(".remarkDiv").mouseover(function () {
+            $("#remarkDivList").on("mouseover",".remarkDiv",function () {
                 $(this).children("div").children("div").show();
-            });
-
-            $(".remarkDiv").mouseout(function () {
+            })
+            $("#remarkDivList").on("mouseout",".remarkDiv",function () {
                 $(this).children("div").children("div").hide();
-            });
-
-            $(".myHref").mouseover(function () {
+            })
+            $("#remarkDivList").on("mouseover",".myHref",function () {
                 $(this).children("span").css("color", "red");
-            });
-
-            $(".myHref").mouseout(function () {
+            })
+            $("#remarkDivList").on("mouseout",".myHref",function () {
                 $(this).children("span").css("color", "#E6E6E6");
-            });
-
-            $("#backClick").click(function () {
-
             })
 
 
-
+            // $(".remarkDiv").mouseover(function () {
+            //     $(this).children("div").children("div").show();
+            // });
+            //
+            // $(".remarkDiv").mouseout(function () {
+            //     $(this).children("div").children("div").hide();
+            // });
+            //
+            // $(".myHref").mouseover(function () {
+            //     $(this).children("span").css("color", "red");
+            // });
+            //
+            // $(".myHref").mouseout(function () {
+            //     $(this).children("span").css("color", "#E6E6E6");
+            // });
         });
 
     </script>
