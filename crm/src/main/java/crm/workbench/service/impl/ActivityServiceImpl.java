@@ -58,12 +58,21 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Activity> getActivityByIds(String[] ids) {
         return activityMapper.selectActivityByIds(ids);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public int saveCreateActivityByList(List<Activity> activityList) {
         return activityMapper.insertActivityList(activityList);
     }
+
+    @Override
+    public Activity getActivityForDetailById(String id) {
+        return activityMapper.selectActivityForDetailById(id);
+    }
+
+
 }

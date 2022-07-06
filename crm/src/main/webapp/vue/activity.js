@@ -6,6 +6,7 @@
         //点击查询按钮改变查询条件后，显示第一页数据,保持用户选择的每页显示条数不变
         vue2.getActivity(1, $("#page").bs_pagination('getOption', 'rowsPerPage'));
     });
+
     //修改活动的日期日历不起作用，无法解决该问题
     $(".myDate").datetimepicker({
         language: "zh-CN",//语言
@@ -206,6 +207,10 @@
                 }
                 idStr = idStr.substr(0,idStr.length-1);
                 window.location.href="workbench/activity/exportSelectedActivity.do?"+idStr;
+            },
+            //查看详情按钮
+            toDetail:function (id) {
+                window.location.href="workbench/activity/detail.do?id="+id;
             }
         },
 
@@ -464,4 +469,9 @@
             }
         }
     });
+
+    // $("#backClick").click(function () {
+    //     window.history.back();
+    //     vue2.getActivity($("#page").bs_pagination('getOption', 'currentPage'), $("#page").bs_pagination('getOption', 'rowsPerPage'));
+    // })
 });

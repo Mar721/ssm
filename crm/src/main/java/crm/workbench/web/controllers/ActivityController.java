@@ -8,6 +8,8 @@ import crm.commons.utils.UUIDUtil;
 import crm.settings.pojo.User;
 import crm.settings.service.UserService;
 import crm.workbench.pojo.Activity;
+import crm.workbench.pojo.ActivityRemark;
+import crm.workbench.service.ActivityRemarkService;
 import crm.workbench.service.ActivityService;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -31,6 +33,8 @@ public class ActivityController {
     private UserService userService;
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private ActivityRemarkService activityRemarkService;
 
     @RequestMapping("/workbench/activity/index.do")
     public ModelAndView index() {
@@ -231,6 +235,42 @@ public class ActivityController {
             }
             int res = activityService.saveCreateActivityByList(activityList);
             return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,"成功添加"+res+"条数据");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,"系统忙，请稍后重试...");
+        }
+    }
+
+    @RequestMapping("/workbench/activity/detail.do")
+    public ModelAndView showDetail(String id){
+        ModelAndView modelAndView = new ModelAndView();
+        Activity activityById = activityService.getActivityForDetailById(id);
+        List<ActivityRemark> activityRemarkList = activityRemarkService.getRemarkByActivityId(id);
+        modelAndView.addObject("activity",activityById);
+        modelAndView.addObject("remarkList",activityRemarkList);
+        modelAndView.setViewName("workbench/activity/detail");
+        return modelAndView;
+    }
+
+    @RequestMapping("/workbench/activity/addRemark.do")
+    @ResponseBody
+    public Object addRemark(String noteContent,String activityId,HttpSession session){
+        User user = (User) session.getAttribute(Contants.SESSION_USER);
+        ActivityRemark activityRemark = new ActivityRemark();
+        activityRemark.setId(UUIDUtil.getUUID());
+        activityRemark.setNoteContent(noteContent);
+        activityRemark.setCreateTime(DateUtil.formatDateTime(new Date()));
+        activityRemark.setCreateBy(user.getId());
+        activityRemark.setEditFlag(Contants.REMARK_EDIT_FLAG_FALSE);
+        activityRemark.setActivityId(activityId);
+        try {
+            int res = activityRemarkService.addRemark(activityRemark);
+            if (res > 0) {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,null,activityRemark);
+            } else {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                        "系统忙，请稍后重试...");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,"系统忙，请稍后重试...");

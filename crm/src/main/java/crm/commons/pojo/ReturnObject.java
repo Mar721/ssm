@@ -1,5 +1,6 @@
 package crm.commons.pojo;
 
+import crm.workbench.pojo.ActivityRemark;
 import reactor.util.annotation.Nullable;
 
 public class ReturnObject {
@@ -22,6 +23,7 @@ public class ReturnObject {
         this.message = message;
         this.retData = retData;
     }
+
 
     public String getCode() {
         return code;

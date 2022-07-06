@@ -274,7 +274,7 @@
                 <tr class="active" v-for="activity in activityList">
                     <td><input type="checkbox" :checked="ids.indexOf(activity.id)>=0" @click="checkOne(activity.id)"/></td>
                     <td><a style="text-decoration: none; cursor: pointer;"
-                           onclick="window.location.href='#';">{{activity.name}}</a></td>
+                           @click="toDetail(activity.id)">{{activity.name}}</a></td>
                     <td>{{activity.owner}}</td>
                     <td>{{activity.startDate}}</td>
                     <td>{{activity.endDate}}</td>
