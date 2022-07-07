@@ -81,25 +81,25 @@
 <!--            enableDeleteByExample="false" enableSelectByExample="false"-->
 <!--            selectByExampleQueryId="false">-->
 <!--        </table>-->
-<!--
+
         <table tableName="tbl_clue" domainObjectName="Clue"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
+        <!--
+                <table tableName="tbl_clue_activity_relation" domainObjectName="ClueActivityRelation"
+                       enableCountByExample="false" enableUpdateByExample="false"
+                       enableDeleteByExample="false" enableSelectByExample="false"
+                       selectByExampleQueryId="false">
+                </table>
 
-        <table tableName="tbl_clue_activity_relation" domainObjectName="ClueActivityRelation"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="tbl_clue_remark" domainObjectName="ClueRemark"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-        -->
+                <table tableName="tbl_clue_remark" domainObjectName="ClueRemark"
+                       enableCountByExample="false" enableUpdateByExample="false"
+                       enableDeleteByExample="false" enableSelectByExample="false"
+                       selectByExampleQueryId="false">
+                </table>
+                -->
         <!--
         <table tableName="tbl_contacts" domainObjectName="Contacts"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -130,20 +130,20 @@
                selectByExampleQueryId="false">
         </table>
         -->
-        <!--
-                <table tableName="tbl_dictionary_type" domainObjectName="DictionaryType"
-                       enableCountByExample="false" enableUpdateByExample="false"
-                       enableDeleteByExample="false" enableSelectByExample="false"
-                       selectByExampleQueryId="false">
-                </table>
+
+        <table tableName="tbl_dic_type" domainObjectName="DicType"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
 
 
-                <table tableName="tbl_dictionary_value" domainObjectName="DictionaryValue"
-                       enableCountByExample="false" enableUpdateByExample="false"
-                       enableDeleteByExample="false" enableSelectByExample="false"
-                       selectByExampleQueryId="false">
-                </table>
-
+        <table tableName="tbl_dic_value" domainObjectName="DicValue"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+<!--
 
                 <table tableName="tbl_marketing_activities" domainObjectName="MarketingActivities"
                        enableCountByExample="false" enableUpdateByExample="false"
@@ -152,11 +152,11 @@
                 </table>
 
 -->
-                <table tableName="tbl_activity_remark" domainObjectName="ActivityRemark"
-                       enableCountByExample="false" enableUpdateByExample="false"
-                       enableDeleteByExample="false" enableSelectByExample="false"
-                       selectByExampleQueryId="false">
-                </table>
+<!--                <table tableName="tbl_activity_remark" domainObjectName="ActivityRemark"-->
+<!--                       enableCountByExample="false" enableUpdateByExample="false"-->
+<!--                       enableDeleteByExample="false" enableSelectByExample="false"-->
+<!--                       selectByExampleQueryId="false">-->
+<!--                </table>-->
 
 
 <!--        <table tableName="tbl_transaction" domainObjectName="Transaction"-->
