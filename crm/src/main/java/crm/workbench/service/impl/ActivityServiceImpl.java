@@ -70,6 +70,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Activity getActivityForDetailById(String id) {
         return activityMapper.selectActivityForDetailById(id);
     }

@@ -190,6 +190,7 @@
         where id = #{id,jdbcType=CHAR}
     </delete>
 
+
     <update id="changeRemark" parameterType="activityRemark">
         update tbl_activity_remark
         set note_content = #{noteContent,jdbcType=VARCHAR},
@@ -198,4 +199,11 @@
             edit_flag = #{editFlag,jdbcType=CHAR}
         where id = #{id,jdbcType=CHAR}
     </update>
+
+    <delete id="deleteRemarkByActivityIds" parameterType="string">
+        delete from tbl_activity_remark where activity_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

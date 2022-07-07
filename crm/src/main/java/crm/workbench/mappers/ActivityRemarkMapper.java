@@ -1,6 +1,7 @@
 package crm.workbench.mappers;
 
 import crm.workbench.pojo.ActivityRemark;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface ActivityRemarkMapper {
     int deleteRemark(String id);
 
     int changeRemark(ActivityRemark activityRemark);
+
+    int deleteRemarkByActivityIds(@Param("ids") String[] ids);
 }

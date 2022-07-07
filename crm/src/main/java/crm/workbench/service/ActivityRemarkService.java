@@ -12,4 +12,6 @@ public interface ActivityRemarkService {
     int deleteRemark(String id);
 
     int changeRemark(ActivityRemark activityRemark);
+
+    int deleteRemarkByActivityIds(String[] ids);
 }

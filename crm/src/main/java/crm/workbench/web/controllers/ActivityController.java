@@ -92,7 +92,9 @@ public class ActivityController {
     public Object deleteActivity(String[] ids) {
         try {
             int i = activityService.deleteActivityIds(ids);
-            if (i > 0) {
+            //删除对应市场活动的备注
+            int res = activityRemarkService.deleteRemarkByActivityIds(ids);
+            if (i > 0 && res > 0) {
                 return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS);
             } else {
                 return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
@@ -199,7 +201,7 @@ public class ActivityController {
 
     @RequestMapping("/workbench/activity/fileUpLoad.do")
     @ResponseBody
-    public Object fileUpLoad(MultipartFile multipartFile,HttpSession session) {
+    public Object fileUpLoad(MultipartFile multipartFile, HttpSession session) {
         User user = (User) session.getAttribute(Contants.SESSION_USER);
         try {
 //            String originalFilename = multipartFile.getOriginalFilename();
@@ -223,38 +225,48 @@ public class ActivityController {
                 for (int j = 0; j < row.getLastCellNum(); j++) {
                     cell = row.getCell(j);
                     String cellValueFormStr = HSSFUtil.getCellValueFormStr(cell);
-                    switch (j){
-                        case 0:activity.setName(cellValueFormStr);break;
-                        case 1:activity.setStartDate(cellValueFormStr);break;
-                        case 2:activity.setEndDate(cellValueFormStr);break;
-                        case 3:activity.setCost(cellValueFormStr);break;
-                        case 4:activity.setDescription(cellValueFormStr);break;
+                    switch (j) {
+                        case 0:
+                            activity.setName(cellValueFormStr);
+                            break;
+                        case 1:
+                            activity.setStartDate(cellValueFormStr);
+                            break;
+                        case 2:
+                            activity.setEndDate(cellValueFormStr);
+                            break;
+                        case 3:
+                            activity.setCost(cellValueFormStr);
+                            break;
+                        case 4:
+                            activity.setDescription(cellValueFormStr);
+                            break;
                     }
                 }
                 activityList.add(activity);
             }
             int res = activityService.saveCreateActivityByList(activityList);
-            return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,"成功添加"+res+"条数据");
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS, "成功添加" + res + "条数据");
         } catch (Exception e) {
             e.printStackTrace();
-            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,"系统忙，请稍后重试...");
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL, "系统忙，请稍后重试...");
         }
     }
 
     @RequestMapping("/workbench/activity/detail.do")
-    public ModelAndView showDetail(String id){
+    public ModelAndView showDetail(String id) {
         ModelAndView modelAndView = new ModelAndView();
         Activity activityById = activityService.getActivityForDetailById(id);
         List<ActivityRemark> activityRemarkList = activityRemarkService.getRemarkByActivityId(id);
-        modelAndView.addObject("activity",activityById);
-        modelAndView.addObject("remarkList",activityRemarkList);
+        modelAndView.addObject("activity", activityById);
+        modelAndView.addObject("remarkList", activityRemarkList);
         modelAndView.setViewName("workbench/activity/detail");
         return modelAndView;
     }
 
     @RequestMapping("/workbench/activity/addRemark.do")
     @ResponseBody
-    public Object addRemark(String noteContent,String activityId,HttpSession session){
+    public Object addRemark(String noteContent, String activityId, HttpSession session) {
         User user = (User) session.getAttribute(Contants.SESSION_USER);
         ActivityRemark activityRemark = new ActivityRemark();
         activityRemark.setId(UUIDUtil.getUUID());
@@ -266,21 +278,21 @@ public class ActivityController {
         try {
             int res = activityRemarkService.addRemark(activityRemark);
             if (res > 0) {
-                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,null,activityRemark);
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS, null, activityRemark);
             } else {
                 return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
                         "系统忙，请稍后重试...");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,"系统忙，请稍后重试...");
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL, "系统忙，请稍后重试...");
         }
     }
 
 
     @RequestMapping("/workbench/activity/delRemark.do")
     @ResponseBody
-    public Object delRemark(String id){
+    public Object delRemark(String id) {
         try {
             int res = activityRemarkService.deleteRemark(id);
             if (res > 0) {
@@ -298,7 +310,7 @@ public class ActivityController {
 
     @RequestMapping("/workbench/activity/changeRemark.do")
     @ResponseBody
-    public Object changeRemark(ActivityRemark activityRemark,HttpSession session){
+    public Object changeRemark(ActivityRemark activityRemark, HttpSession session) {
         User user = (User) session.getAttribute(Contants.SESSION_USER);
         activityRemark.setEditFlag(Contants.REMARK_EDIT_FLAG_TRUE);
         activityRemark.setEditBy(user.getId());
@@ -306,7 +318,7 @@ public class ActivityController {
         try {
             int res = activityRemarkService.changeRemark(activityRemark);
             if (res > 0) {
-                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS,null,activityRemark);
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS, null, activityRemark);
             } else {
                 return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
                         "系统忙，请稍后重试...");
