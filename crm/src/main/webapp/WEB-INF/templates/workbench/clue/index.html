@@ -14,15 +14,8 @@
             src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript"
             src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
-
-    <script type="text/javascript">
-
-        $(function () {
-
-
-        });
-
-    </script>
+    <script type="text/javascript" src="vue/axios.min.js"></script>
+    <script type="text/javascript" src="vue/clue.js"></script>
 </head>
 <body>
 
@@ -44,9 +37,8 @@
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-clueOwner">
-                                <option>zhangsan</option>
-                                <option>lisi</option>
-                                <option>wangwu</option>
+                                <option th:each="user:${userList}" th:value="${user.id}"
+                                        th:text="${user.name}"></option>
                             </select>
                         </div>
                         <label for="create-company" class="col-sm-2 control-label">公司<span
@@ -60,12 +52,10 @@
                         <label for="create-call" class="col-sm-2 control-label">称呼</label>
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-call">
+                                <!--由于是可以为空的，所以要设置一个空参数-->
                                 <option></option>
-                                <option>先生</option>
-                                <option>夫人</option>
-                                <option>女士</option>
-                                <option>博士</option>
-                                <option>教授</option>
+                                <option th:each="appellation:${appellationList}" th:value="${appellation.id}"
+                                        th:text="${appellation.value}"></option>
                             </select>
                         </div>
                         <label for="create-surname" class="col-sm-2 control-label">姓名<span
@@ -105,14 +95,10 @@
                         <label for="create-status" class="col-sm-2 control-label">线索状态</label>
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-status">
+                                <!--由于是可以为空的，所以要设置一个空参数-->
                                 <option></option>
-                                <option>试图联系</option>
-                                <option>将来联系</option>
-                                <option>已联系</option>
-                                <option>虚假线索</option>
-                                <option>丢失线索</option>
-                                <option>未联系</option>
-                                <option>需要条件</option>
+                                <option th:each="clueState:${clueStateList}" th:value="${clueState.id}"
+                                    th:text="${clueState.value}"></option>
                             </select>
                         </div>
                     </div>
@@ -122,20 +108,8 @@
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-source">
                                 <option></option>
-                                <option>广告</option>
-                                <option>推销电话</option>
-                                <option>员工介绍</option>
-                                <option>外部介绍</option>
-                                <option>在线商场</option>
-                                <option>合作伙伴</option>
-                                <option>公开媒介</option>
-                                <option>销售邮件</option>
-                                <option>合作伙伴研讨会</option>
-                                <option>内部研讨会</option>
-                                <option>交易会</option>
-                                <option>web下载</option>
-                                <option>web调研</option>
-                                <option>聊天</option>
+                                <option th:each="source:${sourceList}" th:value="${source.id}" th:text="${source.value}"></option>
+
                             </select>
                         </div>
                     </div>
@@ -180,7 +154,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+                <button type="button" class="btn btn-primary" id="saveClue">保存</button>
             </div>
         </div>
     </div>

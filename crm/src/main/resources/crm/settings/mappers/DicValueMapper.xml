@@ -133,6 +133,9 @@
     </update>
 
     <select id="selectDicValueByTypeCode" resultType="DicValue" parameterType="string">
-
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dic_value
+        where type_code=#{typeCode}
     </select>
 </mapper>
