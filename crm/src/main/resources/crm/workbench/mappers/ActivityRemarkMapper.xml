@@ -45,6 +45,7 @@
         delete from tbl_activity_remark
         where id = #{id,jdbcType=CHAR}
     </delete>
+
     <insert id="insert" parameterType="ActivityRemark">
         <!--
           WARNING - @mbggenerated
@@ -168,6 +169,7 @@
         where id = #{id,jdbcType=CHAR}
     </update>
 
+
     <select id="selectRemarkByActivityId" resultMap="BaseResultMap" parameterType="string">
         select ar.id,ar.note_content,ar.create_time,u1.name as create_by,ar.edit_time,u2.name as edit_by,ar.edit_flag
         from tbl_activity_remark ar
@@ -182,4 +184,18 @@
         values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR},
                 #{createBy,jdbcType=VARCHAR},#{editFlag,jdbcType=CHAR}, #{activityId,jdbcType=CHAR})
     </insert>
+
+    <delete id="deleteRemark" parameterType="string">
+        delete from tbl_activity_remark
+        where id = #{id,jdbcType=CHAR}
+    </delete>
+
+    <update id="changeRemark" parameterType="activityRemark">
+        update tbl_activity_remark
+        set note_content = #{noteContent,jdbcType=VARCHAR},
+            edit_time = #{editTime,jdbcType=CHAR},
+            edit_by = #{editBy,jdbcType=VARCHAR},
+            edit_flag = #{editFlag,jdbcType=CHAR}
+        where id = #{id,jdbcType=CHAR}
+    </update>
 </mapper>

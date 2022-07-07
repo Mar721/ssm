@@ -16,47 +16,51 @@
 
         $(function () {
             var vue = new Vue({
-                "el":"#remarkDivList",
-                data:{
-                    noteContent:""
+                "el": "#remarkDivList",
+                data: {
+                    noteContent: ""
                 },
-                methods:{
-                    addRemark:function () {
+                methods: {
+                    addRemark: function () {
+                        if ((vue.noteContent).trim()===""){
+                            alert("备注不能为空！");
+                            return;
+                        }
                         var id = '[[${activity.id}]]';
                         axios({
-                            method:"POST",
-                            url:"workbench/activity/addRemark.do",
-                            params:{
-                                noteContent:vue.noteContent,
-                                activityId:id,
+                            method: "POST",
+                            url: "workbench/activity/addRemark.do",
+                            params: {
+                                noteContent: vue.noteContent,
+                                activityId: id,
                             }
                         })
                             .then(function (value) {
-                                if (value.data.code === "1"){
+                                if (value.data.code === "1") {
                                     //清空输入备注框
-                                    var htmlStr="";
-                                    htmlStr+="<div class=\"remarkDiv\" id=\"div_"+value.data.retData.id+"\" style=\"height: 60px;\">";
-                                    htmlStr+="	<img th:title=\"${session.sessionUser.name}\" src=\"image/user-thumbnail.png\"";
-                                    htmlStr+="		 style=\"width: 30px; height:30px;\">";
-                                    htmlStr+="		<div style=\"position: relative; top: -40px; left: 40px;\">";
-                                    htmlStr+="			<h5>"+vue.noteContent+"</h5>";
-                                    htmlStr+="			<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font>";
-                                    htmlStr+="			<b>[[${activity.name}]]</b> <small style=\"color: gray;\"> "+value.data.retData.createTime;
-                                    htmlStr+="			由[[${session.user.name}]]创建</small>";
-                                    htmlStr+="			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
-                                    htmlStr+="				<a class=\"myHref\" name=\"editA\" remarkId=\""+value.data.retData.id+"\" href=\"javascript:void(0);\"><span";
-                                    htmlStr+="						class=\"glyphicon glyphicon-edit\"";
-                                    htmlStr+="						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
-                                    htmlStr+="				&nbsp;&nbsp;&nbsp;&nbsp;";
-                                    htmlStr+="				<a class=\"myHref\" name=\"deleteA\" remarkId=\""+value.data.retData.id+"\" href=\"javascript:void(0);\"><span";
-                                    htmlStr+="						class=\"glyphicon glyphicon-remove\"";
-                                    htmlStr+="						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
-                                    htmlStr+="			</div>";
-                                    htmlStr+="		</div>";
-                                    htmlStr+="</div>";
+                                    var htmlStr = "";
+                                    htmlStr += "<div class=\"remarkDiv\" id=\"div_" + value.data.retData.id + "\" style=\"height: 60px;\">";
+                                    htmlStr += "	<img th:title=\"${session.sessionUser.name}\" src=\"image/user-thumbnail.png\"";
+                                    htmlStr += "		 style=\"width: 30px; height:30px;\">";
+                                    htmlStr += "		<div style=\"position: relative; top: -40px; left: 40px;\">";
+                                    htmlStr += "			<h5 id=\"h5_" + value.data.retData.id + "\">" + vue.noteContent + "</h5>";
+                                    htmlStr += "			<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font>";
+                                    htmlStr += "			<b>[[${activity.name}]]</b> <small style=\"color: gray;\"> " + value.data.retData.createTime;
+                                    htmlStr += "			由[[${session.user.name}]]创建</small>";
+                                    htmlStr += "			<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+                                    htmlStr += "				<a class=\"myHref\" name=\"editA\" remarkId=\"" + value.data.retData.id + "\" href=\"javascript:void(0);\"><span";
+                                    htmlStr += "						class=\"glyphicon glyphicon-edit\"";
+                                    htmlStr += "						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+                                    htmlStr += "				&nbsp;&nbsp;&nbsp;&nbsp;";
+                                    htmlStr += "				<a class=\"myHref\" name=\"deleteA\" remarkId=\"" + value.data.retData.id + "\" href=\"javascript:void(0);\"><span";
+                                    htmlStr += "						class=\"glyphicon glyphicon-remove\"";
+                                    htmlStr += "						style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+                                    htmlStr += "			</div>";
+                                    htmlStr += "		</div>";
+                                    htmlStr += "</div>";
                                     $(".page-header").after(htmlStr);
-                                    vue.noteContent="";
-                                }else {
+                                    vue.noteContent = "";
+                                } else {
                                     alert(value.data.message);
                                 }
                             })
@@ -85,21 +89,98 @@
                 $("#remarkDiv").css("height", "90px");
                 cancelAndSaveBtnDefault = true;
             });
-
-            $("#remarkDivList").on("mouseover",".remarkDiv",function () {
+            //修改和删除图标改为动态绑定
+            $("#remarkDivList").on("mouseover", ".remarkDiv", function () {
                 $(this).children("div").children("div").show();
             })
-            $("#remarkDivList").on("mouseout",".remarkDiv",function () {
+            $("#remarkDivList").on("mouseout", ".remarkDiv", function () {
                 $(this).children("div").children("div").hide();
             })
-            $("#remarkDivList").on("mouseover",".myHref",function () {
+            $("#remarkDivList").on("mouseover", ".myHref", function () {
                 $(this).children("span").css("color", "red");
             })
-            $("#remarkDivList").on("mouseout",".myHref",function () {
+            $("#remarkDivList").on("mouseout", ".myHref", function () {
                 $(this).children("span").css("color", "#E6E6E6");
             })
+            //删除备注
+            $("#remarkDivList").on("click", "a[name='deleteA']", function () {
+                //自定义属性
+                var id = $(this).attr("remarkId");
+                axios({
+                    method: "POST",
+                    url:"workbench/activity/delRemark.do",
+                    params: {
+                        id:id,
+                    }
+                })
+                    .then(function (value) {
+                        if (value.data.code === "1"){
+                            //刷新备注 , 动态的删除对应的div
+                            $("#div_"+id).remove();
+                        }else {
+                            alert(data.message);
+                        }
 
-
+                    })
+                    .catch(function (reason) {
+                        console.log(reason);
+                    });
+            });
+            //修改备注
+            $("#remarkDivList").on("click", "a[name='editA']", function () {
+                var id = $(this).attr('remarkId');
+                var noteContent = $("#h5_"+id).text();
+                //写到模态窗口
+                $("#edit-id").val(id);
+                $("#edit-noteContent").val(noteContent);
+                $("#editRemarkModal").modal("show");
+                // //自定义属性
+                // var id = $(this).attr("remarkId");
+                // axios({
+                //     method: "POST",
+                //     url:"workbench/activity/delRemark.do",
+                //     params: {
+                //         id:id,
+                //     }
+                // })
+                //     .then(function (value) {
+                //
+                //     })
+                //     .catch(function (reason) {
+                //         console.log(reason);
+                //     });
+            });
+            //点击模态窗口的更新备注
+            $("#updateRemarkBtn").click(function () {
+                var id = $("#edit-id").val();
+                var noteContent = $.trim($("#edit-noteContent").val());
+                //表单验证
+                if (noteContent === ""){
+                    alert("备注内容不能为空");
+                    return;
+                }
+                axios({
+                    method:"POST",
+                    url:"workbench/activity/changeRemark.do",
+                    params:{
+                        id:id,
+                        noteContent:noteContent
+                    }
+                })
+                .then(function (value) {
+                    if (value.data.code==="1"){
+                        $("#editRemarkModal").modal("hide");
+                        $("#div_"+id+" h5").text(noteContent);
+                        $("#div_"+id+" small").text(" "+value.data.retData.editTime+" 由[[${session.user.name}]]修改");
+                    }else {
+                        alert(value.data.message);
+                        $("#editRemarkModal").modal("show");
+                    }
+                })
+                .catch(function (reason) {
+                    console.log(reason);
+                });
+            });
             // $(".remarkDiv").mouseover(function () {
             //     $(this).children("div").children("div").show();
             // });
@@ -123,8 +204,6 @@
 <body>
 <!-- 修改市场活动备注的模态窗口 -->
 <div class="modal fade" id="editRemarkModal" role="dialog">
-    <%-- 备注的id --%>
-    <input type="hidden" id="remarkId">
     <div class="modal-dialog" role="document" style="width: 40%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -230,11 +309,12 @@
     <div class="remarkDiv" th:id="|div_${remark.id}|" style="height: 60px;" th:each=" remark: ${remarkList}">
         <img th:title="${remark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
         <div style="position: relative; top: -40px; left: 40px;">
-            <h5>[[${remark.noteContent}]]</h5>
+            <h5 th:id="|h5_${remark.id}|">[[${remark.noteContent}]]</h5>
             <font color="gray">市场活动</font> <font color="gray">-</font> <b>[[${activity.name}]]</b> <small
                 style="color: gray;"> [[${remark.editFlag=='1'?remark.editTime:remark.createTime}]]
             由[[${remark.editFlag=='1'?remark.editBy:remark.createBy}]][[${remark.editFlag=='1'?'修改':'创建'}]]</small>
             <div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
+<!--                name和remarkId都是自定义属性-->
                 <a class="myHref" name="editA" th:remarkId="${remark.id}" href="javascript:void(0);"><span
                         class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -250,7 +330,8 @@
                       placeholder="添加备注..." v-model="noteContent"></textarea>
             <p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px;">
                 <button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-                <button type="button" class="btn btn-primary" id="saveCreateActivityRemarkBtn" @click="addRemark">保存</button>
+                <button type="button" class="btn btn-primary" id="saveCreateActivityRemarkBtn" @click="addRemark">保存
+                </button>
             </p>
         </form>
     </div>

@@ -8,4 +8,8 @@ public interface ActivityRemarkService {
     List<ActivityRemark> getRemarkByActivityId(String id);
 
     int addRemark(ActivityRemark activityRemark);
+
+    int deleteRemark(String id);
+
+    int changeRemark(ActivityRemark activityRemark);
 }
