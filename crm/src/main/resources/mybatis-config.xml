@@ -12,13 +12,15 @@
         <package name="crm.workbench.pojo"/>
     </typeAliases>
 
+    <!-- 分页插件 -->
     <plugins>
         <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
     </plugins>
+
     <mappers>
         <package name="crm.settings.mappers"/>
         <package name="crm.workbench.mappers"/>
     </mappers>
-    <!-- 分页插件 -->
+
 
 </configuration>

@@ -2,7 +2,12 @@ package crm.workbench.service;
 
 import crm.workbench.pojo.Clue;
 
+import java.util.List;
+import java.util.Map;
+
 public interface ClueService {
 
     int saveClue(Clue clue);
+
+    List<Clue> queryClueByCondition(Map<String, Object> map);
 }

@@ -49,6 +49,7 @@
         from tbl_clue
         where id = #{id,jdbcType=CHAR}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         <!--
           WARNING - @mbggenerated
@@ -325,4 +326,45 @@
                 #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR},
                 #{address,jdbcType=VARCHAR})
     </insert>
+
+    <select id="selectClueByCondition" resultMap="BaseResultMap" parameterType="map">
+        select c.id,
+               c.fullname,
+               tdv1.value as appellation,
+               c.company,
+               c.phone,
+               c.mphone,
+               tdv2.value as source,
+               u1.name    as owner,
+               tdv3.value as state
+        from tbl_clue c
+                 join tbl_user u1 on c.owner = u1.id
+                 left join tbl_dic_value tdv1 on tdv1.id = c.appellation
+                 left join tbl_dic_value tdv2 on tdv2.id = c.source
+                 left join tbl_dic_value tdv3 on tdv3.id = c.state
+        <where>
+            <if test="name!=null and name!=''">
+                and c.fullname like '%' #{name} '%'
+            </if>
+            <if test="company!=null and company!=''">
+                and c.company like '%' #{company} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and c.phone like '%' #{phone} '%'
+            </if>
+            <if test="owner!=null and owner!=''">
+                and c.owner like '%' #{owner} '%'
+            </if>
+            <if test="source!=null and source!=''">
+                and c.source like '%' #{source} '%'
+            </if>
+            <if test="mobilePhone!=null and mobilePhone!=''">
+                and c.mphone like '%' #{mobilePhone} '%'
+            </if>
+            <if test="state!=null and state!=''">
+                and c.state like '%' #{state} '%'
+            </if>
+        </where>
+        order by c.create_time desc
+    </select>
 </mapper>
