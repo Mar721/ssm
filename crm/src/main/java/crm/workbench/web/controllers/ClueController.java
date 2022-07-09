@@ -9,6 +9,7 @@ import crm.settings.pojo.User;
 import crm.settings.service.DicValueService;
 import crm.settings.service.UserService;
 import crm.workbench.pojo.Clue;
+import crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,8 @@ public class ClueController {
     private UserService userService;
     @Autowired
     private DicValueService dicValueService;
+    @Autowired
+    private ClueService clueService;
 
     @RequestMapping("/workbench/clue/index.do")
     public ModelAndView index() {
@@ -48,7 +51,18 @@ public class ClueController {
         clue.setId(UUIDUtil.getUUID());
         clue.setCreateTime(DateUtil.formatDateTime(new Date()));
         clue.setCreateBy(user.getId());
-
-        return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS);
+        try {
+            int i = clueService.saveClue(clue);
+            if (i > 0) {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                        "系统忙，请稍后重试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                    "系统忙，请稍后重试...");
+        }
     }
 }

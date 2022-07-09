@@ -15,6 +15,8 @@ $(function () {
         let contactSummary = $("#create-contactSummary").val();
         let nextContactTime = $("#create-nextContactTime").val();
         let address = $("#create-address").val();
+
+
         axios({
             method: "POST",
             url: "workbench/clue/createClue.do",
