@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <base th:href="${#request.getContextPath()}+'/'">
     <meta charset="UTF-8">
 
     <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css"
-          rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css"
+          href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="jquery/bs_pagination-master/css/jquery.bs_pagination.min.css">
 
-    <script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.5/qs.js"></script>
     <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
     <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-            src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript"
             src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
     <script type="text/javascript" src="jquery/bs_pagination-master/js/jquery.bs_pagination.min.js"></script>
@@ -35,15 +33,14 @@
                 <h4 class="modal-title" id="myModalLabel">创建线索</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form">
+                <form id="createClueFrom" class="form-horizontal" role="form">
 
                     <div class="form-group">
-                        <label for="create-clueOwner" class="col-sm-2 control-label">所有者<span
+                        <label for="create-owner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="create-clueOwner">
-                                <option th:each="user:${userList}" th:value="${user.id}"
-                                        th:text="${user.name}"></option>
+                            <select class="form-control" id="create-owner">
+                                <option th:each="user:${userList}" th:value="${user.id}">[[${user.name}]]</option>
                             </select>
                         </div>
                         <label for="create-company" class="col-sm-2 control-label">公司<span
@@ -54,19 +51,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="create-call" class="col-sm-2 control-label">称呼</label>
+                        <label for="create-appellation" class="col-sm-2 control-label">称呼</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="create-call">
+                            <select class="form-control" id="create-appellation">
                                 <!--由于是可以为空的，所以要设置一个空参数-->
                                 <option></option>
-                                <option th:each="appellation:${appellationList}" th:value="${appellation.id}"
-                                        th:text="${appellation.value}"></option>
+                                <option th:each="appe:${appellationList}" th:value="${appe.id}">[[${appe.value}]]
+                                </option>
                             </select>
                         </div>
-                        <label for="create-surname" class="col-sm-2 control-label">姓名<span
+                        <label for="create-fullname" class="col-sm-2 control-label">姓名<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="create-surname">
+                            <input type="text" class="form-control" id="create-fullname">
                         </div>
                     </div>
 
@@ -97,13 +94,13 @@
                         <div class="col-sm-10" style="width: 300px;">
                             <input type="text" class="form-control" id="create-mphone">
                         </div>
-                        <label for="create-status" class="col-sm-2 control-label">线索状态</label>
+                        <label for="create-state" class="col-sm-2 control-label">线索状态</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="create-status">
-                                <!--由于是可以为空的，所以要设置一个空参数-->
+                            <select class="form-control" id="create-state">
                                 <option></option>
-                                <option th:each="clueState:${clueStateList}" th:value="${clueState.id}"
-                                        th:text="${clueState.value}"></option>
+                                <option th:each="clueState:${clueStateList}" th:value="${clueState.id}">
+                                    [[${clueState.value}]]
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -113,18 +110,17 @@
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-source">
                                 <option></option>
-                                <option th:each="source:${sourceList}" th:value="${source.id}"
-                                        th:text="${source.value}"></option>
-
+                                <option th:each="source:${sourceList}" th:value="${source.id}">[[${source.value}]]
+                                </option>
                             </select>
                         </div>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="create-describe" class="col-sm-2 control-label">线索描述</label>
+                        <label for="create-description" class="col-sm-2 control-label">线索描述</label>
                         <div class="col-sm-10" style="width: 81%;">
-                            <textarea class="form-control" rows="3" id="create-describe"></textarea>
+                            <textarea class="form-control" rows="3" id="create-description"></textarea>
                         </div>
                     </div>
 
@@ -140,7 +136,8 @@
                         <div class="form-group">
                             <label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="create-nextContactTime">
+                                <input type="text" style="cursor: pointer" class="form-control mydate"
+                                       id="create-nextContactTime" readonly>
                             </div>
                         </div>
                     </div>
@@ -160,7 +157,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" id="saveClue">保存</button>
+                <button type="button" class="btn btn-primary" id="saveCreateClueBtn">保存</button>
             </div>
         </div>
     </div>
@@ -180,13 +177,11 @@
                 <form class="form-horizontal" role="form">
 
                     <div class="form-group">
-                        <label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span
+                        <label for="edit-owner" class="col-sm-2 control-label">所有者<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="edit-clueOwner">
-                                <option>zhangsan</option>
-                                <option>lisi</option>
-                                <option>wangwu</option>
+                            <select class="form-control" id="edit-owner">
+                                <option th:each="user:${userList}">[[${user.name}]]</option>
                             </select>
                         </div>
                         <label for="edit-company" class="col-sm-2 control-label">公司<span
@@ -197,21 +192,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="edit-call" class="col-sm-2 control-label">称呼</label>
+                        <label for="edit-appellation" class="col-sm-2 control-label">称呼</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="edit-call">
+                            <select class="form-control" id="edit-appellation">
                                 <option></option>
-                                <option selected>先生</option>
-                                <option>夫人</option>
-                                <option>女士</option>
-                                <option>博士</option>
-                                <option>教授</option>
+                                <option th:each="appe:${appellationList}" th:value="${appe.id}">[[${appe.value}]]
+                                </option>
                             </select>
                         </div>
-                        <label for="edit-surname" class="col-sm-2 control-label">姓名<span
+                        <label for="edit-fullname" class="col-sm-2 control-label">姓名<span
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="edit-surname" value="李四">
+                            <input type="text" class="form-control" id="edit-fullname" value="李四">
                         </div>
                     </div>
 
@@ -243,17 +235,13 @@
                         <div class="col-sm-10" style="width: 300px;">
                             <input type="text" class="form-control" id="edit-mphone" value="12345678901">
                         </div>
-                        <label for="edit-status" class="col-sm-2 control-label">线索状态</label>
+                        <label for="edit-state" class="col-sm-2 control-label">线索状态</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <select class="form-control" id="edit-status">
+                            <select class="form-control" id="edit-state">
                                 <option></option>
-                                <option>试图联系</option>
-                                <option>将来联系</option>
-                                <option selected>已联系</option>
-                                <option>虚假线索</option>
-                                <option>丢失线索</option>
-                                <option>未联系</option>
-                                <option>需要条件</option>
+                                <option th:each="clueState:${clueStateList}" th:value="${clueState.id}">
+                                    [[${clueState.value}]]
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -263,28 +251,17 @@
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="edit-source">
                                 <option></option>
-                                <option selected>广告</option>
-                                <option>推销电话</option>
-                                <option>员工介绍</option>
-                                <option>外部介绍</option>
-                                <option>在线商场</option>
-                                <option>合作伙伴</option>
-                                <option>公开媒介</option>
-                                <option>销售邮件</option>
-                                <option>合作伙伴研讨会</option>
-                                <option>内部研讨会</option>
-                                <option>交易会</option>
-                                <option>web下载</option>
-                                <option>web调研</option>
-                                <option>聊天</option>
+                                <option></option>
+                                <option th:each="source:${sourceList}" th:value="${source.id}">[[${source.value}]]
+                                </option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="edit-describe" class="col-sm-2 control-label">描述</label>
+                        <label for="edit-description" class="col-sm-2 control-label">描述</label>
                         <div class="col-sm-10" style="width: 81%;">
-                            <textarea class="form-control" rows="3" id="edit-describe">这是一条线索的描述信息</textarea>
+                            <textarea class="form-control" rows="3" id="edit-description">这是一条线索的描述信息</textarea>
                         </div>
                     </div>
 
@@ -300,7 +277,8 @@
                         <div class="form-group">
                             <label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="edit-nextContactTime" value="2017-05-01">
+                                <input type="text" style="cursor: pointer" class="form-control mydate"
+                                       id="edit-nextContactTime" value="2017-05-01" readonly>
                             </div>
                         </div>
                     </div>
@@ -337,7 +315,7 @@
 
 <div style="position: relative; top: -20px; left: 0px; width: 100%; height: 100%;">
 
-    <div style="width: 100%; position: absolute;top: 5px; left: 10px;" id="main_div">
+    <div style="width: 100%; position: absolute;top: 5px; left: 10px;">
 
         <div class="btn-toolbar" role="toolbar" style="height: 80px;">
             <form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
@@ -345,41 +323,39 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">名称</div>
-                        <input class="form-control" type="text" id="name">
+                        <input class="form-control" type="text" id="query-fullname">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">公司</div>
-                        <input class="form-control" type="text" id="company">
+                        <input class="form-control" type="text" id="query-company">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">公司座机</div>
-                        <input class="form-control" type="text" id="phone">
+                        <input class="form-control" type="text" id="query-phone">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">线索来源</div>
-                        <select class="form-control" id="source">
+                        <select class="form-control" id="query-source">
                             <option></option>
-                            <option th:each="source:${sourceList}" th:value="${source.id}"
-                                    th:text="${source.value}"></option>
+                            <option th:each="source:${sourceList}" th:value="${source.id}">[[${source.value}]]</option>
                         </select>
                     </div>
                 </div>
 
                 <br>
+                <br>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">所有者</div>
-                        <input class="form-control" type="text" id="owner">
+                        <input class="form-control" type="text" id="query-owner">
                     </div>
                 </div>
 
@@ -387,44 +363,48 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">手机</div>
-                        <input class="form-control" type="text" id="mphone">
+                        <input class="form-control" type="text" id="query-mphone">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">线索状态</div>
-                        <select class="form-control" id="state">
+                        <select class="form-control" id="query-state">
                             <option></option>
-                            <option th:each="clueState:${clueStateList}" th:value="${clueState.id}"
-                                    th:text="${clueState.value}"></option>
+                            <option th:each="clueState:${clueStateList}" th:value="${clueState.id}">
+                                [[${clueState.value}]]
+                            </option>
                         </select>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-default">查询</button>
+                <button type="button" id="queryClueBtn" class="btn btn-default">查询</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="btn btn-default">重置查询条件</button>
 
             </form>
         </div>
         <div class="btn-toolbar" role="toolbar"
              style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
             <div class="btn-group" style="position: relative; top: 18%;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClueModal"><span
+                <button type="button" class="btn btn-primary" id="createClueBtn"><span
                         class="glyphicon glyphicon-plus"></span> 创建
                 </button>
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span
-                        class="glyphicon glyphicon-pencil"></span> 修改
+                <button type="button" class="btn btn-default" id="editClueBtn" data-toggle="modal"
+                        data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改
                 </button>
-                <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+                <button type="button" class="btn btn-danger" id="deleteClueBtn"><span
+                        class="glyphicon glyphicon-minus"></span> 删除
+                </button>
             </div>
 
 
         </div>
-        <div style="position: relative;top: 50px;" id="clueDiv">
+        <div style="position: relative;top: 50px;">
             <table class="table table-hover">
                 <thead>
                 <tr style="color: #B3B3B3;">
-                    <td><input type="checkbox"/></td>
+                    <td><input type="checkbox" id="checkAll"/></td>
                     <td>名称</td>
                     <td>公司</td>
                     <td>公司座机</td>
@@ -434,8 +414,8 @@
                     <td>线索状态</td>
                 </tr>
                 </thead>
-                <tbody>
-                <tr v-for="clue in pageInfo.list" class="active">
+                <tbody id="tBody">
+                <tr class="active" v-for="clue in clueList">
                     <td><input type="checkbox"/></td>
                     <td><a style="text-decoration: none; cursor: pointer;"
                            @click="toDetail(clue.id)">{{clue.fullname}}{{clue.appellation}}</a></td>
@@ -449,9 +429,45 @@
                 </tbody>
             </table>
         </div>
+
+        <!--page-->
+        <div style="height: 50px; position: relative;top: 60px;">
+            <div id="page"></div>
+            <!--<div>
+                <button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
+            </div>
+            <div class="btn-group" style="position: relative;top: -34px; left: 110px;">
+                <button type="button" class="btn btn-default" style="cursor: default;">显示</button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        10
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">20</a></li>
+                        <li><a href="#">30</a></li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
+            </div>
+            <div style="position: relative;top: -88px; left: 285px;">
+                <nav>
+                    <ul class="pagination">
+                        <li class="disabled"><a href="#">首页</a></li>
+                        <li class="disabled"><a href="#">上一页</a></li>
+                        <li class="active"><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li><a href="#">下一页</a></li>
+                        <li class="disabled"><a href="#">末页</a></li>
+                    </ul>
+                </nav>
+            </div>-->
+        </div>
+
     </div>
-    <div id="page"></div>
-</div>
 
 </div>
 </body>

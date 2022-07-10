@@ -31,4 +31,9 @@ public class ClueServiceImpl implements ClueService {
     public Clue queryClueById(String id) {
         return clueMapper.selectClueById(id);
     }
+
+    @Override
+    public int queryCountOfClueByCondition(Map<String, Object> map) {
+        return clueMapper.selectCountOfClueBycondition(map);
+    }
 }

@@ -11,4 +11,6 @@ public interface ClueMapper {
     List<Clue> selectClueByCondition(Map<String, Object> map);
 
     Clue selectClueById(String id);
+
+    int selectCountOfClueBycondition(Map<String, Object> map);
 }

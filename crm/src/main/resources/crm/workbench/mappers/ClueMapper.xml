@@ -366,6 +366,7 @@
             </if>
         </where>
         order by c.create_time desc
+        limit #{beginNo},#{pageSize}
     </select>
     <select id="selectClueById" resultMap="BaseResultMap" parameterType="string">
         select c.id,
@@ -391,10 +392,41 @@
         from tbl_clue c
         join tbl_user u1 on c.owner = u1.id
         join tbl_user u2 on c.create_by = u2.id
-        join tbl_user u3 on c.edit_by = u3.id
+        left join tbl_user u3 on c.edit_by = u3.id
         left join tbl_dic_value tdv1 on tdv1.id = c.appellation
         left join tbl_dic_value tdv2 on tdv2.id = c.source
         left join tbl_dic_value tdv3 on tdv3.id = c.state
-        where id = #{id}
+        where c.id = #{id}
+    </select>
+    <select id="selectCountOfClueBycondition" resultType="java.lang.Integer">
+        select count(*)
+        from tbl_clue c
+        join tbl_user u1 on c.owner = u1.id
+        left join tbl_dic_value tdv1 on tdv1.id = c.appellation
+        left join tbl_dic_value tdv2 on tdv2.id = c.source
+        left join tbl_dic_value tdv3 on tdv3.id = c.state
+        <where>
+            <if test="name!=null and name!=''">
+                and c.fullname like '%' #{name} '%'
+            </if>
+            <if test="company!=null and company!=''">
+                and c.company like '%' #{company} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and c.phone like '%' #{phone} '%'
+            </if>
+            <if test="owner!=null and owner!=''">
+                and c.owner like '%' #{owner} '%'
+            </if>
+            <if test="source!=null and source!=''">
+                and c.source like '%' #{source} '%'
+            </if>
+            <if test="mobilePhone!=null and mobilePhone!=''">
+                and c.mphone like '%' #{mobilePhone} '%'
+            </if>
+            <if test="state!=null and state!=''">
+                and c.state like '%' #{state} '%'
+            </if>
+        </where>
     </select>
 </mapper>

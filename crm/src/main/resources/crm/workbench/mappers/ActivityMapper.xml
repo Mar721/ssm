@@ -343,8 +343,10 @@
         where a.id=#{id}
     </select>
     <select id="selectConnectActivityByClueId" resultMap="BaseResultMap">
-        select
+        select ta.id,ta.name,ta.start_date,ta.end_date,u1.name as owner
         from tbl_activity ta
-        ;
+        join tbl_user u1 on ta.owner=u1.id
+        join tbl_clue_activity_relation car on ta.id = car.activity_id
+        where car.clue_id = #{clueId}
     </select>
 </mapper>

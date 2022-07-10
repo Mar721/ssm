@@ -61,7 +61,7 @@ public class ClueController {
     }
 
 
-    @RequestMapping("/workbench/clue/createClue.do")
+    @RequestMapping("/workbench/clue/saveCreateClue.do")
     @ResponseBody
     public Object createClue(Clue clue, HttpSession session){
         User user = (User) session.getAttribute(Contants.SESSION_USER);
@@ -83,46 +83,71 @@ public class ClueController {
         }
     }
 
-    @RequestMapping("/workbench/clue/queryClue.do")
+    @RequestMapping("/workbench/clue/queryActivityByConditionForPage.do")
     @ResponseBody
-    public Object queryClueByCondition(HttpServletRequest request,String name, String company,
+    public Object queryClueByCondition(String fullname, String company,
                                        String phone, String source,
-                                       String owner, String mobilePhone, String state,
+                                       String owner, String mphone, String state,
                                        @RequestParam(defaultValue = "1") Integer pageNo,
                                        @RequestParam(defaultValue = "10") Integer pageSize){
-        // 为了程序的严谨性，判断非空：
-        if (pageNo == null) {
-            pageNo = 1; // 设置默认当前页
-        }
-        if (pageNo <= 0) {
-            pageNo = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10; // 设置默认每页显示的数据数
-        }
-        //开启分页
-        PageHelper.startPage(pageNo, pageSize);
-        Map<String,Object> map = new HashMap<>();
-        map.put("name",name);
-        map.put("company",company);
-        map.put("phone",phone);
-        map.put("owner",owner);
-        map.put("source",source);
-        map.put("mobilePhone",mobilePhone);
-        map.put("state",state);
+        //封装
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", fullname);
+        map.put("owner", owner);
+        map.put("company", company);
+        map.put("phone", phone);
+        map.put("mobilePhone", mphone);
+        map.put("source", source);
+        map.put("state", state);
+        map.put("beginNo", (pageNo - 1) * pageSize);
+        map.put("pageSize", pageSize);
+
+        //查询
         List<Clue> clueList = clueService.queryClueByCondition(map);
-        PageInfo<Clue> pageInfo = new PageInfo<>(clueList, pageNo);
-        PageHelper.clearPage();
-        return pageInfo;
+        int totalRows = clueService.queryCountOfClueByCondition(map);
+
+        //响应
+        Map<String, Object> retMap = new HashMap<>();
+        retMap.put("clueList", clueList);
+        retMap.put("totalRows", totalRows);
+        return retMap;
+
+        //后端分页实在是有bug，只能放弃
+//        // 为了程序的严谨性，判断非空：
+//        if (pageNo == null) {
+//            pageNo = 1; // 设置默认当前页
+//        }
+//        if (pageNo <= 0) {
+//            pageNo = 1;
+//        }
+//        if (pageSize == null) {
+//            pageSize = 10; // 设置默认每页显示的数据数
+//        }
+//        //开启分页
+//        PageHelper.startPage(pageNo, pageSize);
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("name",name);
+//        map.put("company",company);
+//        map.put("phone",phone);
+//        map.put("owner",owner);
+//        map.put("source",source);
+//        map.put("mobilePhone",mobilePhone);
+//        map.put("state",state);
+//        List<Clue> clueList = clueService.queryClueByCondition(map);
+//        PageInfo<Clue> pageInfo = new PageInfo<>(clueList, pageNo);
+//        PageHelper.clearPage();
+//        return pageInfo;
     }
 
-    @RequestMapping("workbench/clue/detail.do")
+    @RequestMapping("/workbench/clue/queryClueDetail.do")
     public ModelAndView toDetail(String id){
         ModelAndView modelAndView = new ModelAndView();
         Clue clue = clueService.queryClueById(id);
         List<ClueRemark> clueRemarkList = clueRemarkService.queryClueRemarkListByClueId(id);
         List<Activity> activityList = activityService.queryConnectActivityByClueId(id);
-
+        modelAndView.addObject("clue",clue);
+        modelAndView.addObject("remarkList",clueRemarkList);
+        modelAndView.addObject("activityList",activityList);
         modelAndView.setViewName("workbench/clue/detail");
         return modelAndView;
     }
