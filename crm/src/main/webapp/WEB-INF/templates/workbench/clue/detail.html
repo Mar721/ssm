@@ -15,7 +15,7 @@
         //默认情况下取消和保存按钮是隐藏的
         var cancelAndSaveBtnDefault = true;
         //关联市场活动处的搜索框，内容不变的话不发送请求
-        var searchKey='';
+        // var searchKey = '';
 
         $(function () {
             var vue = new Vue({
@@ -66,11 +66,15 @@
             $("#bundActivityBtn").click(function () {
                 //init 重置模态窗口  搜索框，搜索列表
                 $("#searchActivityText").val("");
-                vue.activityList=[];
+                vue.activityList = [];
                 //弹出 线索 绑定模态窗口
                 $("#bundModal").modal("show");
             });
-
+            $("#cancelButton").click(function () {
+                $("#searchActivityText").val("");
+                vue.activityList = [];
+                $("#bundModal").modal("hide");
+            });
             /**
              * 给关联市场活动设置单击事件
              */
@@ -87,51 +91,51 @@
                 });
                 axios({
                     method: "POST",
-                    url:"workbench/clue/saveBund.do",
+                    url: "workbench/clue/saveBund.do",
                     params: {
-                        clueId:'[[${clue.id}]]',
-                        ids:ids
+                        clueId: '[[${clue.id}]]',
+                        ids: ids
                     },
                     paramsSerializer: function (params) {
                         return Qs.stringify(params, {indices: false})
                     }
                 })
-                .then(function (value) {
-                    if (value.data.code === "1") {
-                        $("#bundModal").modal("hide");
+                    .then(function (value) {
+                        if (value.data.code === "1") {
+                            $("#bundModal").modal("hide");
 
-                        //已经有现成的数据，就不用再去后台查询了
-                        var addActivityList=[];
-                        for (var i = 0;i<ids.length;i++){
-                            for(var j =0;j<vue.activityList.length;j++){
-                                if (ids[i]===vue.activityList[j].id){
-                                    addActivityList.push(vue.activityList[j]);
+                            //已经有现成的数据，就不用再去后台查询了
+                            var addActivityList = [];
+                            for (var i = 0; i < ids.length; i++) {
+                                for (var j = 0; j < vue.activityList.length; j++) {
+                                    if (ids[i] === vue.activityList[j].id) {
+                                        addActivityList.push(vue.activityList[j]);
+                                    }
                                 }
                             }
+                            //刷新刚刚关联的市场活动
+                            var htmlStr = "";
+                            //异步刷新的html数据里面不要加th：activityId  写activityId即可
+                            $.each(addActivityList, function (index, obj) {
+                                htmlStr += "<tr id='tr_" + obj.id + "'>";
+                                htmlStr += "	<td>" + obj.name + "</td>";
+                                htmlStr += "	<td>" + obj.startDate + "</td>";
+                                htmlStr += "	<td>" + obj.endDate + "</td>";
+                                htmlStr += "	<td>" + obj.owner + "</td>";
+                                htmlStr += "	<td><a href=\"javascript:void(0);\" activityId=\"" + obj.id + "\"";
+                                htmlStr += "		   style=\"text-decoration: none;\"><span";
+                                htmlStr += "			class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>";
+                                htmlStr += "</tr>";
+                            });
+                            $("#relationedTBody").append(htmlStr);
+                        } else {
+                            alert(data.message);
+                            $("#bundModal").modal("show");
                         }
-                        //刷新刚刚关联的市场活动
-                        var htmlStr = "";
-                        //异步刷新的html数据里面不要加th：activityId  写activityId即可
-                        $.each(addActivityList, function (index, obj) {
-                            htmlStr += "<tr id='tr_" + obj.id + "'>";
-                            htmlStr += "	<td>" + obj.name + "</td>";
-                            htmlStr += "	<td>" + obj.startDate + "</td>";
-                            htmlStr += "	<td>" + obj.endDate + "</td>";
-                            htmlStr += "	<td>" + obj.owner + "</td>";
-                            htmlStr += "	<td><a href=\"javascript:void(0);\" activityId=\"" + obj.id + "\"";
-                            htmlStr += "		   style=\"text-decoration: none;\"><span";
-                            htmlStr += "			class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>";
-                            htmlStr += "</tr>";
-                        });
-                        $("#relationedTBody").append(htmlStr);
-                    } else {
-                        alert(data.message);
-                        $("#bundModal").modal("show");
-                    }
-                })
-                .catch(function (reason) {
+                    })
+                    .catch(function (reason) {
 
-                });
+                    });
             });
 
             /**
@@ -141,22 +145,23 @@
                 var activityId = $(this).attr("activityId");
                 var clueId = '[[${clue.id}]]';
                 if (window.confirm("确定要删除此关联吗?")) {
-                    $.ajax({
-                        url: 'workbench/clue/saveunBund.do',
-                        data: {
+                    axios({
+                        method: "POST",
+                        url: "workbench/clue/saveunBund.do",
+                        params: {
                             activityId: activityId,
                             clueId: clueId
-                        },
-                        type: 'post',
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.code == "1") {
-                                //动态删除tr，jquery的remove（）
-                                $("#tr_" + activityId).remove();
-                            } else {
-                                alert(data.message);
-                            }
                         }
+
+                    }).then(function (value) {
+                        if (value.data.code === "1") {
+                            //动态删除tr，jquery的remove（）
+                            $("#tr_" + activityId).remove();
+                        } else {
+                            alert(value.data.message);
+                        }
+                    }).catch(function (reason) {
+
                     });
                 }
             });
@@ -176,20 +181,20 @@
                 var activityName = this.value;
                 var clueId = '[[${clue.id}]]';
 
-                if (activityName===''){
-                    vue.activityList=[];
+                if (activityName === '') {
+                    vue.activityList = [];
                     return;
                 }
-                //内容并没有发生变化，不发送请求
-                if (searchKey===activityName){
-                    return;
-                }else {
-                    searchKey=activityName;
-                }
+                // //内容并没有发生变化，不发送请求
+                // if (searchKey !== '' && searchKey === activityName) {
+                //     return;
+                // } else {
+                //     searchKey = activityName;
+                // }
                 axios({
-                    method:"POST",
-                    url:"workbench/clue/queryActivityForDetailByNameClueId.do",
-                    params:{
+                    method: "POST",
+                    url: "workbench/clue/queryActivityForDetailByNameClueId.do",
+                    params: {
                         activityName: activityName,
                         clueId: clueId
                     }
@@ -263,18 +268,18 @@
                     </tr>
                     </thead>
                     <tbody id="tBody">
-                        <tr v-for="activity in activityList">
-                            <td><input type="checkbox" v-bind:value="activity.id"/></td>
-                            <td>{{activity.name}}</td>
-                            <td>{{activity.startDate}}</td>
-                            <td>{{activity.endDate}}</td>
-                            <td>{{activity.owner}}</td>
-                        </tr>
+                    <tr v-for="activity in activityList">
+                        <td><input type="checkbox" v-bind:value="activity.id"/></td>
+                        <td>{{activity.name}}</td>
+                        <td>{{activity.startDate}}</td>
+                        <td>{{activity.endDate}}</td>
+                        <td>{{activity.owner}}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-default" id="cancelButton">取消</button>
                 <button type="button" class="btn btn-primary" id="saveBundActivityBtn">关联</button>
             </div>
         </div>

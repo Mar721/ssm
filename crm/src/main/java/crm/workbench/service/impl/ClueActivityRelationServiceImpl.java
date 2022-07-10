@@ -19,4 +19,9 @@ public class ClueActivityRelationServiceImpl implements ClueActivityRelationServ
     public int saveBund(List<ClueActivityRelation> clueActivityRelationList) {
         return clueActivityRelationMapper.insertBund(clueActivityRelationList);
     }
+
+    @Override
+    public int saveunBund(ClueActivityRelation clueActivityRelation) {
+        return clueActivityRelationMapper.deleteClueActivityRelationByClueActivityId(clueActivityRelation);
+    }
 }

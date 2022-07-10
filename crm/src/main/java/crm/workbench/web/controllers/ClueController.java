@@ -165,4 +165,34 @@ public class ClueController {
                     "系统忙，请稍后重试...");
         }
     }
+
+
+    @RequestMapping("/workbench/clue/saveunBund.do")
+    @ResponseBody
+    public Object saveActivityClueUnBund(ClueActivityRelation clueActivityRelation){
+        try {
+            int res = clueActivityRelationService.saveunBund(clueActivityRelation);
+            if (res > 0) {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                        "系统忙，请稍后重试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                    "系统忙，请稍后重试...");
+        }
+    }
+
+    @RequestMapping("/workbench/clue/toConvert.do")
+    public ModelAndView toConvert(String clueId){
+        ModelAndView modelAndView = new ModelAndView();
+        Clue clue = clueService.queryClueById(clueId);
+        List<DicValue> stageList = dicValueService.queryDicValueByTypeCode("stage");
+        modelAndView.addObject("clue",clue);
+        modelAndView.addObject("stageList",stageList);
+        modelAndView.setViewName("workbench/clue/convert");
+        return modelAndView;
+    }
 }

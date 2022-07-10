@@ -10,4 +10,6 @@ import java.util.Map;
 public interface ClueActivityRelationMapper {
 
     int insertBund(@Param("clueActivityRelationList") List<ClueActivityRelation> clueActivityRelationList);
+
+    int deleteClueActivityRelationByClueActivityId(ClueActivityRelation clueActivityRelation);
 }

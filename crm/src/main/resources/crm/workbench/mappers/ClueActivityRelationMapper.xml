@@ -39,6 +39,7 @@
         delete from tbl_clue_activity_relation
         where id = #{id,jdbcType=CHAR}
     </delete>
+
     <insert id="insert" parameterType="ClueActivityRelation">
         <!--
           WARNING - @mbggenerated
@@ -118,4 +119,10 @@
             (#{car.id},#{car.clueId},#{car.activityId})
         </foreach>
     </insert>
+
+
+    <delete id="deleteClueActivityRelationByClueActivityId" parameterType="clueActivityRelation">
+        delete from tbl_clue_activity_relation
+        where clue_id=#{clueId} and activity_id=#{activityId}
+    </delete>
 </mapper>
