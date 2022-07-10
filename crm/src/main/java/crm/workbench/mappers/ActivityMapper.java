@@ -28,4 +28,6 @@ public interface ActivityMapper {
     Activity selectActivityForDetailById(String id);
 
     List<Activity> selectConnectActivityByClueId(String id);
+
+    List<Activity> selectActivityForDetailByNameClueId(Map<String, Object> map);
 }

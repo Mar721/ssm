@@ -349,4 +349,14 @@
         join tbl_clue_activity_relation car on ta.id = car.activity_id
         where car.clue_id = #{clueId}
     </select>
+    <select id="selectActivityForDetailByNameClueId" resultMap="BaseResultMap" parameterType="map">
+        select ta.id,ta.name,ta.start_date,ta.end_date,u1.name as owner
+        from tbl_activity ta
+                 join tbl_user u1 on ta.owner=u1.id
+        where ta.name like '%' #{activityName} '%' and ta.id not in (
+            select activity_id
+            from tbl_clue_activity_relation
+            where clue_id = #{clueId}
+        )
+    </select>
 </mapper>

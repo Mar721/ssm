@@ -12,8 +12,10 @@ import crm.settings.service.DicValueService;
 import crm.settings.service.UserService;
 import crm.workbench.pojo.Activity;
 import crm.workbench.pojo.Clue;
+import crm.workbench.pojo.ClueActivityRelation;
 import crm.workbench.pojo.ClueRemark;
 import crm.workbench.service.ActivityService;
+import crm.workbench.service.ClueActivityRelationService;
 import crm.workbench.service.ClueRemarkService;
 import crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ClueController {
@@ -43,6 +42,8 @@ public class ClueController {
     private ClueRemarkService clueRemarkService;
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private ClueActivityRelationService clueActivityRelationService;
 
     @RequestMapping("/workbench/clue/index.do")
     public ModelAndView index() {
@@ -63,7 +64,7 @@ public class ClueController {
 
     @RequestMapping("/workbench/clue/saveCreateClue.do")
     @ResponseBody
-    public Object createClue(Clue clue, HttpSession session){
+    public Object createClue(Clue clue, HttpSession session) {
         User user = (User) session.getAttribute(Contants.SESSION_USER);
         clue.setId(UUIDUtil.getUUID());
         clue.setCreateTime(DateUtil.formatDateTime(new Date()));
@@ -89,7 +90,7 @@ public class ClueController {
                                        String phone, String source,
                                        String owner, String mphone, String state,
                                        @RequestParam(defaultValue = "1") Integer pageNo,
-                                       @RequestParam(defaultValue = "10") Integer pageSize){
+                                       @RequestParam(defaultValue = "10") Integer pageSize) {
         //封装
         Map<String, Object> map = new HashMap<>();
         map.put("name", fullname);
@@ -116,15 +117,52 @@ public class ClueController {
     }
 
     @RequestMapping("/workbench/clue/queryClueDetail.do")
-    public ModelAndView toDetail(String id){
+    public ModelAndView toDetail(String id) {
         ModelAndView modelAndView = new ModelAndView();
         Clue clue = clueService.queryClueById(id);
         List<ClueRemark> clueRemarkList = clueRemarkService.queryClueRemarkListByClueId(id);
         List<Activity> activityList = activityService.queryConnectActivityByClueId(id);
-        modelAndView.addObject("clue",clue);
-        modelAndView.addObject("remarkList",clueRemarkList);
-        modelAndView.addObject("activityList",activityList);
+        modelAndView.addObject("clue", clue);
+        modelAndView.addObject("remarkList", clueRemarkList);
+        modelAndView.addObject("activityList", activityList);
         modelAndView.setViewName("workbench/clue/detail");
         return modelAndView;
+    }
+
+    @RequestMapping("workbench/clue/queryActivityForDetailByNameClueId.do")
+    @ResponseBody
+    public Object getActivity(String clueId, String activityName) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("clueId", clueId);
+        map.put("activityName", activityName);
+        //模糊查询
+        return activityService.queryActivityForDetailByNameClueId(map);
+    }
+
+    @RequestMapping("workbench/clue/saveBund.do")
+    @ResponseBody
+    public Object saveActivityClueBund(String[] ids, String clueId) {
+        ArrayList<ClueActivityRelation> clueActivityRelationList = new ArrayList<>();
+        ClueActivityRelation clueActivityRelation;
+        for (String id : ids) {
+            clueActivityRelation = new ClueActivityRelation();
+            clueActivityRelation.setId(UUIDUtil.getUUID());
+            clueActivityRelation.setActivityId(id);
+            clueActivityRelation.setClueId(clueId);
+            clueActivityRelationList.add(clueActivityRelation);
+        }
+        try {
+            int res = clueActivityRelationService.saveBund(clueActivityRelationList);
+            if (res > 0) {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                        "系统忙，请稍后重试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ReturnObject(Contants.RETURN_OBJECT_CODE_FAIL,
+                    "系统忙，请稍后重试...");
+        }
     }
 }
