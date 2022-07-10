@@ -113,30 +113,6 @@ public class ClueController {
         return retMap;
 
         //后端分页实在是有bug，只能放弃
-//        // 为了程序的严谨性，判断非空：
-//        if (pageNo == null) {
-//            pageNo = 1; // 设置默认当前页
-//        }
-//        if (pageNo <= 0) {
-//            pageNo = 1;
-//        }
-//        if (pageSize == null) {
-//            pageSize = 10; // 设置默认每页显示的数据数
-//        }
-//        //开启分页
-//        PageHelper.startPage(pageNo, pageSize);
-//        Map<String,Object> map = new HashMap<>();
-//        map.put("name",name);
-//        map.put("company",company);
-//        map.put("phone",phone);
-//        map.put("owner",owner);
-//        map.put("source",source);
-//        map.put("mobilePhone",mobilePhone);
-//        map.put("state",state);
-//        List<Clue> clueList = clueService.queryClueByCondition(map);
-//        PageInfo<Clue> pageInfo = new PageInfo<>(clueList, pageNo);
-//        PageHelper.clearPage();
-//        return pageInfo;
     }
 
     @RequestMapping("/workbench/clue/queryClueDetail.do")
