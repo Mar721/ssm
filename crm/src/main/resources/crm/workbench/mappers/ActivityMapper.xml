@@ -342,4 +342,9 @@
                  left join tbl_user u3 on u3.id=a.edit_by
         where a.id=#{id}
     </select>
+    <select id="selectConnectActivityByClueId" resultMap="BaseResultMap">
+        select
+        from tbl_activity ta
+        ;
+    </select>
 </mapper>

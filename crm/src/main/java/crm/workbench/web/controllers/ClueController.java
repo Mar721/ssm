@@ -10,15 +10,21 @@ import crm.settings.pojo.DicValue;
 import crm.settings.pojo.User;
 import crm.settings.service.DicValueService;
 import crm.settings.service.UserService;
+import crm.workbench.pojo.Activity;
 import crm.workbench.pojo.Clue;
+import crm.workbench.pojo.ClueRemark;
+import crm.workbench.service.ActivityService;
+import crm.workbench.service.ClueRemarkService;
 import crm.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +39,10 @@ public class ClueController {
     private DicValueService dicValueService;
     @Autowired
     private ClueService clueService;
+    @Autowired
+    private ClueRemarkService clueRemarkService;
+    @Autowired
+    private ActivityService activityService;
 
     @RequestMapping("/workbench/clue/index.do")
     public ModelAndView index() {
@@ -75,7 +85,7 @@ public class ClueController {
 
     @RequestMapping("/workbench/clue/queryClue.do")
     @ResponseBody
-    public Object queryClueByCondition(String name, String company,
+    public Object queryClueByCondition(HttpServletRequest request,String name, String company,
                                        String phone, String source,
                                        String owner, String mobilePhone, String state,
                                        @RequestParam(defaultValue = "1") Integer pageNo,
@@ -104,5 +114,16 @@ public class ClueController {
         PageInfo<Clue> pageInfo = new PageInfo<>(clueList, pageNo);
         PageHelper.clearPage();
         return pageInfo;
+    }
+
+    @RequestMapping("workbench/clue/detail.do")
+    public ModelAndView toDetail(String id){
+        ModelAndView modelAndView = new ModelAndView();
+        Clue clue = clueService.queryClueById(id);
+        List<ClueRemark> clueRemarkList = clueRemarkService.queryClueRemarkListByClueId(id);
+        List<Activity> activityList = activityService.queryConnectActivityByClueId(id);
+
+        modelAndView.setViewName("workbench/clue/detail");
+        return modelAndView;
     }
 }

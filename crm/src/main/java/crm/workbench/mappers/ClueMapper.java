@@ -9,4 +9,6 @@ public interface ClueMapper {
     int insertClue(Clue clue);
 
     List<Clue> selectClueByCondition(Map<String, Object> map);
+
+    Clue selectClueById(String id);
 }

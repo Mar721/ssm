@@ -26,4 +26,6 @@ public interface ActivityMapper {
     int insertActivityList(@Param("activityList") List<Activity> activityList);
 
     Activity selectActivityForDetailById(String id);
+
+    List<Activity> selectConnectActivityByClueId(String id);
 }

@@ -423,29 +423,6 @@
                 }
                 var formData = new FormData();
                 formData.append("multipartFile",activityFile);
-                // $.ajax({
-                //     url:'/workbench/activity/fileUpLoad.do',
-                //     data:formData,
-                //     //文件上传只能使用post
-                //     type:'post',
-                //     //设置ajax向后台提交参数之前，是否把参数统一转换成字符串，默认true
-                //     processData:false,
-                //     //设置ajax向后台提交参数之前，是否使用urlencode编码，默认是true
-                //     contentType:false,
-                //     dataType:'json',
-                //     success:function (data) {
-                //         if (data.code === "1"){
-                //             //保存成功，
-                //             $("#importActivityModal").modal("hide");
-                //             alert(data.message);
-                //             vue2.queryActivityByConditionForPage(1,$("#page").bs_pagination('getOption','rowsPerPage'));
-                //         }else {
-                //             alert(data.message);
-                //             //失败回显信息，模态窗口不关闭,下面的代码可以不写
-                //             $("#importActivityModal").modal("show");
-                //         }
-                //     }
-                // });
                 axios({
                     method:"POST",
                     url:"workbench/activity/fileUpLoad.do",

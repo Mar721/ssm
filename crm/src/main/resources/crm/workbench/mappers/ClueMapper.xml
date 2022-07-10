@@ -329,19 +329,19 @@
 
     <select id="selectClueByCondition" resultMap="BaseResultMap" parameterType="map">
         select c.id,
-               c.fullname,
-               tdv1.value as appellation,
-               c.company,
-               c.phone,
-               c.mphone,
-               tdv2.value as source,
-               u1.name    as owner,
-               tdv3.value as state
+        c.fullname,
+        tdv1.value as appellation,
+        c.company,
+        c.phone,
+        c.mphone,
+        tdv2.value as source,
+        u1.name as owner,
+        tdv3.value as state
         from tbl_clue c
-                 join tbl_user u1 on c.owner = u1.id
-                 left join tbl_dic_value tdv1 on tdv1.id = c.appellation
-                 left join tbl_dic_value tdv2 on tdv2.id = c.source
-                 left join tbl_dic_value tdv3 on tdv3.id = c.state
+        join tbl_user u1 on c.owner = u1.id
+        left join tbl_dic_value tdv1 on tdv1.id = c.appellation
+        left join tbl_dic_value tdv2 on tdv2.id = c.source
+        left join tbl_dic_value tdv3 on tdv3.id = c.state
         <where>
             <if test="name!=null and name!=''">
                 and c.fullname like '%' #{name} '%'
@@ -366,5 +366,35 @@
             </if>
         </where>
         order by c.create_time desc
+    </select>
+    <select id="selectClueById" resultMap="BaseResultMap" parameterType="string">
+        select c.id,
+               c.fullname,
+               tdv1.value as appellation,
+               u1.name    as owner,
+               c.company,
+               c.job,
+               c.email,
+               c.website,
+               c.phone,
+               c.mphone,
+               tdv2.value as source,
+               tdv3.value as state,
+               u2.name as create_by,
+               u3.name as edit_by,
+               c.create_time,
+               c.edit_time,
+               c.description,
+               c.contact_summary,
+               c.next_contact_time,
+               c.address
+        from tbl_clue c
+        join tbl_user u1 on c.owner = u1.id
+        join tbl_user u2 on c.create_by = u2.id
+        join tbl_user u3 on c.edit_by = u3.id
+        left join tbl_dic_value tdv1 on tdv1.id = c.appellation
+        left join tbl_dic_value tdv2 on tdv2.id = c.source
+        left join tbl_dic_value tdv3 on tdv3.id = c.state
+        where id = #{id}
     </select>
 </mapper>

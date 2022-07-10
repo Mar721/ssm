@@ -10,4 +10,6 @@ public interface ClueService {
     int saveClue(Clue clue);
 
     List<Clue> queryClueByCondition(Map<String, Object> map);
+
+    Clue queryClueById(String id);
 }
