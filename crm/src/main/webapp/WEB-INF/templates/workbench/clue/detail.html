@@ -9,12 +9,23 @@
     <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="vue/axios.min.js"></script>
     <script type="text/javascript" src="vue/vue.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/qs/6.10.5/qs.js"></script>
     <script type="text/javascript">
 
         //默认情况下取消和保存按钮是隐藏的
         var cancelAndSaveBtnDefault = true;
+        //关联市场活动处的搜索框，内容不变的话不发送请求
+        var searchKey='';
 
         $(function () {
+            var vue = new Vue({
+                "el": "#tBody",
+                data: {
+                    activityList: []
+                }
+            });
+
+
             $("#remark").focus(function () {
                 if (cancelAndSaveBtnDefault) {
                     //设置remarkDiv的高度为130px
@@ -55,8 +66,7 @@
             $("#bundActivityBtn").click(function () {
                 //init 重置模态窗口  搜索框，搜索列表
                 $("#searchActivityText").val("");
-                $("#tBody").html("");
-
+                vue.activityList=[];
                 //弹出 线索 绑定模态窗口
                 $("#bundModal").modal("show");
             });
@@ -67,44 +77,60 @@
             $("#saveBundActivityBtn").click(function () {
                 //收集参数,选中checkedbox
                 var $checkedIds = $("#tBody input[type='checkbox']:checked");
-                if ($checkedIds.size() == 0) {
+                if ($checkedIds.size() === 0) {
                     alert("请选择要关联的市场活动");
                     return;
                 }
-                var ids = "";
+                var ids = [];
                 $.each($checkedIds, function (index, obj) {
-                    ids += "activityId=" + this.value + "&";
+                    ids.push(obj.value);
                 });
-                ids += "clueId=" + '[[${clue.id}]]';
-                //发送参数
-                $.ajax({
-                    url: 'workbench/clue/saveBund.do',
-                    data: ids,
-                    type: 'post',
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.code == "1") {
-                            $("#bundModal").modal("hide");
-                            //刷新刚刚关联的市场活动
-                            var htmlStr = "";
-                            //异步刷新的html数据里面不要加th：activityId  写activityId即可
-                            $.each(data.retData, function (index, obj) {
-                                htmlStr += "<tr id='tr_" + obj.id + "'>";
-                                htmlStr += "	<td>" + obj.name + "</td>";
-                                htmlStr += "	<td>" + obj.startDate + "</td>";
-                                htmlStr += "	<td>" + obj.endDate + "</td>";
-                                htmlStr += "	<td>" + obj.owner + "</td>";
-                                htmlStr += "	<td><a href=\"javascript:void(0);\" activityId=\"" + obj.id + "\"";
-                                htmlStr += "		   style=\"text-decoration: none;\"><span";
-                                htmlStr += "			class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>";
-                                htmlStr += "</tr>";
-                            });
-                            $("#relationedTBody").append(htmlStr);
-                        } else {
-                            alert(data.message);
-                            $("#bundModal").modal("show");
-                        }
+                axios({
+                    method: "POST",
+                    url:"workbench/clue/saveBund.do",
+                    params: {
+                        clueId:'[[${clue.id}]]',
+                        ids:ids
+                    },
+                    paramsSerializer: function (params) {
+                        return Qs.stringify(params, {indices: false})
                     }
+                })
+                .then(function (value) {
+                    if (value.data.code === "1") {
+                        $("#bundModal").modal("hide");
+
+                        //已经有现成的数据，就不用再去后台查询了
+                        var addActivityList=[];
+                        for (var i = 0;i<ids.length;i++){
+                            for(var j =0;j<vue.activityList.length;j++){
+                                if (ids[i]===vue.activityList[j].id){
+                                    addActivityList.push(vue.activityList[j]);
+                                }
+                            }
+                        }
+                        //刷新刚刚关联的市场活动
+                        var htmlStr = "";
+                        //异步刷新的html数据里面不要加th：activityId  写activityId即可
+                        $.each(addActivityList, function (index, obj) {
+                            htmlStr += "<tr id='tr_" + obj.id + "'>";
+                            htmlStr += "	<td>" + obj.name + "</td>";
+                            htmlStr += "	<td>" + obj.startDate + "</td>";
+                            htmlStr += "	<td>" + obj.endDate + "</td>";
+                            htmlStr += "	<td>" + obj.owner + "</td>";
+                            htmlStr += "	<td><a href=\"javascript:void(0);\" activityId=\"" + obj.id + "\"";
+                            htmlStr += "		   style=\"text-decoration: none;\"><span";
+                            htmlStr += "			class=\"glyphicon glyphicon-remove\"></span>解除关联</a></td>";
+                            htmlStr += "</tr>";
+                        });
+                        $("#relationedTBody").append(htmlStr);
+                    } else {
+                        alert(data.message);
+                        $("#bundModal").modal("show");
+                    }
+                })
+                .catch(function (reason) {
+
                 });
             });
 
@@ -140,33 +166,41 @@
              * 给市场活动搜索框添加键盘弹起事件
              */
             $("#searchActivityText").keyup(function () {
+                //boostrap框架有bug，回车会白屏，所以要屏蔽回车
+                $(window).keydown(function (e) {
+                    if (e.keyCode === 13) {
+                        return false;
+                    }
+                });
                 //收集参数
                 var activityName = this.value;
                 var clueId = '[[${clue.id}]]';
-                $.ajax({
-                    url: 'workbench/clue/queryActivityForDetailByNameClueId.do',
-                    data: {
+
+                if (activityName===''){
+                    vue.activityList=[];
+                    return;
+                }
+                //内容并没有发生变化，不发送请求
+                if (searchKey===activityName){
+                    return;
+                }else {
+                    searchKey=activityName;
+                }
+                axios({
+                    method:"POST",
+                    url:"workbench/clue/queryActivityForDetailByNameClueId.do",
+                    params:{
                         activityName: activityName,
                         clueId: clueId
-                    },
-                    type: 'post',
-                    dataType: 'json',
-                    success: function (data) {
-                        //遍历显示 activity
-                        var htmlStr = "";
-                        $.each(data, function (index, obj) {
-                            htmlStr += "<tr>";
-                            htmlStr += "	<td><input type=\"checkbox\" value=\"" + obj.id + "\"/></td>";
-                            htmlStr += "	<td>" + obj.name + "</td>";
-                            htmlStr += "	<td>" + obj.startDate + "</td>";
-                            htmlStr += "	<td>" + obj.endDate + "</td>";
-                            htmlStr += "	<td>" + obj.owner + "</td>";
-                            htmlStr += "</tr>";
-                        });
-                        //show
-                        $("#tBody").html(htmlStr);
                     }
-                });
+                })
+                    .then(function (value) {
+                        vue.activityList = value.data;
+                    })
+                    .catch(function (reason) {
+                        console.log(reason);
+                    });
+
             });
 
             /**
@@ -178,7 +212,7 @@
             });
             $("#tBody").on("click", "input[type='checkbox']", function () {
                 $("#checkAll").prop("checked",
-                    $("#tBody input[type='checkbox']").size() ==
+                    $("#tBody input[type='checkbox']").size() ===
                     $("#tBody input[type='checkbox']:checked").size());
             });
 
@@ -229,13 +263,13 @@
                     </tr>
                     </thead>
                     <tbody id="tBody">
-                    <!--<tr>
-                        <td><input type="checkbox"/></td>
-                        <td>发传单</td>
-                        <td>2020-10-10</td>
-                        <td>2020-10-20</td>
-                        <td>zhangsan</td>
-                    </tr>-->
+                        <tr v-for="activity in activityList">
+                            <td><input type="checkbox" v-bind:value="activity.id"/></td>
+                            <td>{{activity.name}}</td>
+                            <td>{{activity.startDate}}</td>
+                            <td>{{activity.endDate}}</td>
+                            <td>{{activity.owner}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -386,19 +420,6 @@
         </div>
     </div>
 
-    <!-- 备注2
-    <div class="remarkDiv" style="height: 60px;">
-        <img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
-        <div style="position: relative; top: -40px; left: 40px;" >
-            <h5>呵呵！</h5>
-            <font color="gray">线索</font> <font color="gray">-</font> <b>李四先生-动力节点</b> <small style="color: gray;"> 2017-01-22 10:20:10 由zhangsan</small>
-            <div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-                <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-            </div>
-        </div>
-    </div>-->
 
     <div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 120px;">
         <form role="form" style="position: relative;top: 10px; left: 10px;">
