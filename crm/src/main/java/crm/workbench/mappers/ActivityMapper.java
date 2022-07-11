@@ -30,4 +30,6 @@ public interface ActivityMapper {
     List<Activity> selectConnectActivityByClueId(String id);
 
     List<Activity> selectActivityForDetailByNameClueId(Map<String, Object> map);
+
+    List<Activity> selectActivityForConvertByNameClueId(Map<String, Object> map);
 }

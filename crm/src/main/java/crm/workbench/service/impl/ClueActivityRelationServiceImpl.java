@@ -6,6 +6,7 @@ import crm.workbench.pojo.ClueActivityRelation;
 import crm.workbench.service.ClueActivityRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,13 @@ public class ClueActivityRelationServiceImpl implements ClueActivityRelationServ
     private ClueActivityRelationMapper clueActivityRelationMapper;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public int saveBund(List<ClueActivityRelation> clueActivityRelationList) {
         return clueActivityRelationMapper.insertBund(clueActivityRelationList);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public int saveunBund(ClueActivityRelation clueActivityRelation) {
         return clueActivityRelationMapper.deleteClueActivityRelationByClueActivityId(clueActivityRelation);
     }

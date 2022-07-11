@@ -13,4 +13,6 @@ public interface ClueMapper {
     Clue selectClueById(String id);
 
     int selectCountOfClueBycondition(Map<String, Object> map);
+
+    void deleteClueByClueId(String clueId);
 }

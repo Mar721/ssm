@@ -76,13 +76,20 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Activity> queryConnectActivityByClueId(String id) {
         return activityMapper.selectConnectActivityByClueId(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Activity> queryActivityForDetailByNameClueId(Map<String, Object> map) {
         return activityMapper.selectActivityForDetailByNameClueId(map);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Activity> queryActivityForConvertByNameClueId(Map<String, Object> map) {
+        return activityMapper.selectActivityForConvertByNameClueId(map);
+    }
 }

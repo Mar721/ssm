@@ -12,4 +12,8 @@ public interface ClueActivityRelationMapper {
     int insertBund(@Param("clueActivityRelationList") List<ClueActivityRelation> clueActivityRelationList);
 
     int deleteClueActivityRelationByClueActivityId(ClueActivityRelation clueActivityRelation);
+
+    List<ClueActivityRelation> selectClueActivityRelationByClueId(String clueId);
+
+    void deleteClueActivityRelationListByClueId(String clueId);
 }

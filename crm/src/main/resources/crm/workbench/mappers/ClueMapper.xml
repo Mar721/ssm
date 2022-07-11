@@ -59,6 +59,7 @@
         delete from tbl_clue
         where id = #{id,jdbcType=CHAR}
     </delete>
+
     <insert id="insert" parameterType="Clue">
         <!--
           WARNING - @mbggenerated
@@ -429,4 +430,9 @@
             </if>
         </where>
     </select>
+
+    <delete id="deleteClueByClueId">
+        delete from tbl_clue
+        where id = #{clueId,jdbcType=CHAR}
+    </delete>
 </mapper>
