@@ -41,6 +41,7 @@
         from tbl_customer
         where id = #{id,jdbcType=CHAR}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         <!--
           WARNING - @mbggenerated
@@ -238,4 +239,11 @@
                 #{contactSummary,jdbcType=VARCHAR},
                 #{nextContactTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
     </insert>
+
+
+    <select id="selectCustomerNameByName" resultType="string" parameterType="string">
+        select name
+        from tbl_customer
+        where name like '%' #{customerName} '%';
+    </select>
 </mapper>
