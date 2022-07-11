@@ -110,8 +110,8 @@ public class ClueServiceImpl implements ClueService {
         List<ClueRemark> clueRemarkList = clueRemarkMapper.selectClueRemarkByClueId(clueId);
         List<ContactsRemark> contactsRemarkList = new ArrayList<>();
         List<CustomerRemark> customerRemarkList = new ArrayList<>();
-        CustomerRemark customerRemark = null;
-        ContactsRemark contactsRemark = null;
+        CustomerRemark customerRemark;
+        ContactsRemark contactsRemark;
         for (ClueRemark clueRemark:clueRemarkList){
             customerRemark = new CustomerRemark();
             customerRemark.setId(UUIDUtil.getUUID());
