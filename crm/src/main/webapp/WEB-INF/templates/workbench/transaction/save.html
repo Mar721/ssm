@@ -57,7 +57,6 @@
 
             //每个阶段的可能性可以通过配置文件配置
             $("#create-stage").change(function () {
-                alert("aaaaa");
                 //var stageValue = $(this).find("option:selected").text();
                 var stageValue = $("#create-stage option:selected").text();
                 if (stageValue === "") {
@@ -65,7 +64,6 @@
                     $("#create-possibility").val("");
                     return;
                 }
-                alert("bbbb");
                 axios({
                     method: "POST",
                     url: "workbench/transaction/getPossibilityByStage.do",
