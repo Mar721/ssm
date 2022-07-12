@@ -46,6 +46,7 @@
         from tbl_contacts
         where id = #{id,jdbcType=CHAR}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         <!--
           WARNING - @mbggenerated
@@ -283,7 +284,17 @@
         values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{source,jdbcType=VARCHAR},
                 #{customerId,jdbcType=CHAR}, #{fullname,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR},
                 #{email,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR},
-                #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR},
+                #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR},
+                #{contactSummary,jdbcType=VARCHAR},
                 #{nextContactTime,jdbcType=CHAR}, #{address,jdbcType=VARCHAR})
     </insert>
+
+    <select id="selectContactsByName" resultMap="BaseResultMap" parameterType="string">
+        select id,
+               fullname,
+               email,
+               mphone
+        from tbl_contacts
+        where fullname like '%' #{contactsName} '%'
+    </select>
 </mapper>

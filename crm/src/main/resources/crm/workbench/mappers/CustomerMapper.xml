@@ -246,4 +246,9 @@
         from tbl_customer
         where name like '%' #{customerName} '%';
     </select>
+    <select id="selectCustomerByName" resultMap="BaseResultMap" parameterType="string">
+        select name
+        from tbl_customer
+        where name = #{customerName};
+    </select>
 </mapper>

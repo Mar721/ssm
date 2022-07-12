@@ -32,4 +32,6 @@ public interface ActivityMapper {
     List<Activity> selectActivityForDetailByNameClueId(Map<String, Object> map);
 
     List<Activity> selectActivityForConvertByNameClueId(Map<String, Object> map);
+
+    List<Activity> selectActivityByActivityName(String activityName);
 }

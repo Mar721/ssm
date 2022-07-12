@@ -369,4 +369,10 @@
             where clue_id = #{clueId}
             )
     </select>
+    <select id="selectActivityByActivityName" resultMap="BaseResultMap" parameterType="string">
+        select ta.id,ta.name,ta.start_date,ta.end_date,u1.name as owner
+        from tbl_activity ta
+                 join tbl_user u1 on ta.owner=u1.id
+        where ta.name like '%' #{activityName} '%'
+    </select>
 </mapper>

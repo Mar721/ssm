@@ -10,4 +10,6 @@ public interface CustomerMapper {
     void insertCustomer(Customer customer);
 
     List<String> selectCustomerNameByName(String customerName);
+
+    Customer selectCustomerByName(String customerName);
 }

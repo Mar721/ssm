@@ -54,6 +54,7 @@
             });
 
             $("#searchInput").keyup(function () {
+                //boostrap框架有bug，回车会白屏，所以要屏蔽回车
                 $(window).keydown(function (e) {
                     if (e.keyCode === 13) {
                         return false;
