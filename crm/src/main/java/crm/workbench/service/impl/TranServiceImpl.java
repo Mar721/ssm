@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service("tranService")
@@ -72,5 +73,20 @@ public class TranServiceImpl implements TranService {
         tranHistory.setTranId(tran.getId());
         tranHistory.setStage(tran.getStage());
         tranHistoryMapper.insertTranHistory(tranHistory);
+    }
+
+    @Override
+    public List<Tran> queryTranByCondition(Map<String, Object> map) {
+        return tranMapper.selectTranByCondition(map);
+    }
+
+    @Override
+    public int queryCountOfTranByCondition(Map<String, Object> map) {
+        return tranMapper.selectCountOfTranByCondition(map);
+    }
+
+    @Override
+    public Tran queryTranForDetailById(String tranId) {
+        return tranMapper.selectTranForDetailById(tranId);
     }
 }

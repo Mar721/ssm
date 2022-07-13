@@ -35,6 +35,7 @@
         from tbl_tran_remark
         where id = #{id,jdbcType=CHAR}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         <!--
           WARNING - @mbggenerated
@@ -175,4 +176,11 @@
             #{obj.editTime},#{obj.editFlag}, #{obj.tranId})
         </foreach>
     </insert>
+    <select id="selectTranRemarkForDetailByTranId" resultMap="BaseResultMap" parameterType="string">
+        select tr.id, tr.note_content,u1.name as create_by, tr.create_time,u2.name as edit_by, tr.edit_time, tr.edit_flag
+        from tbl_tran_remark tr
+                 join tbl_user u1 on u1.id=tr.create_by
+                 left join tbl_user u2 on u2.id=tr.edit_by
+        where tr.tran_id = #{tranId}
+    </select>
 </mapper>

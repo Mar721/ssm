@@ -8,4 +8,6 @@ import java.util.List;
 public interface TranRemarkMapper {
 
     void insertTranRemarkByList(@Param("tranRemarkList") List<TranRemark> tranRemarkList);
+
+    List<TranRemark> selectTranRemarkForDetailByTranId(String tranId);
 }
