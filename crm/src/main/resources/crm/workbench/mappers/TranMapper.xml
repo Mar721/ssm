@@ -409,4 +409,10 @@
                  left join tbl_user u3 on u3.id = t.edit_by
         where t.id = #{tranId}
     </select>
+    <select id="selectCountOfTranGroupByStage" resultType="funnelVO">
+        select count(*) as value,dv1.value as name
+        from tbl_tran t
+        join tbl_dic_value dv1 on dv1.id = t.stage
+        group by t.stage
+    </select>
 </mapper>

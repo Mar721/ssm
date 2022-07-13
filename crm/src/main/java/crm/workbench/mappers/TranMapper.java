@@ -1,5 +1,6 @@
 package crm.workbench.mappers;
 
+import crm.workbench.pojo.FunnelVO;
 import crm.workbench.pojo.Tran;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface TranMapper {
     int selectCountOfTranByCondition(Map<String, Object> map);
 
     Tran selectTranForDetailById(String tranId);
+
+    List<FunnelVO> selectCountOfTranGroupByStage();
 }

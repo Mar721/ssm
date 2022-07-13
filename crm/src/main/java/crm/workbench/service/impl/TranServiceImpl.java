@@ -8,6 +8,7 @@ import crm.workbench.mappers.CustomerMapper;
 import crm.workbench.mappers.TranHistoryMapper;
 import crm.workbench.mappers.TranMapper;
 import crm.workbench.pojo.Customer;
+import crm.workbench.pojo.FunnelVO;
 import crm.workbench.pojo.Tran;
 import crm.workbench.pojo.TranHistory;
 import crm.workbench.service.TranService;
@@ -88,5 +89,10 @@ public class TranServiceImpl implements TranService {
     @Override
     public Tran queryTranForDetailById(String tranId) {
         return tranMapper.selectTranForDetailById(tranId);
+    }
+
+    @Override
+    public List<FunnelVO> queryCountOfTranGroupByStage() {
+        return tranMapper.selectCountOfTranGroupByStage();
     }
 }

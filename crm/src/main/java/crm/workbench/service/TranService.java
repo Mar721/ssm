@@ -1,5 +1,6 @@
 package crm.workbench.service;
 
+import crm.workbench.pojo.FunnelVO;
 import crm.workbench.pojo.Tran;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface TranService {
     int queryCountOfTranByCondition(Map<String, Object> map);
 
     Tran queryTranForDetailById(String tranId);
+
+    List<FunnelVO> queryCountOfTranGroupByStage();
 }
